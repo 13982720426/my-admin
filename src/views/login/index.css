@@ -17,13 +17,17 @@
 }
 
 .form-header .column {
+  margin-bottom: 0 !important;
   float: left;
   font-size: 16px;
 }
 
 .form-header span {
   float: right;
-  font-size: 12px;
-  opacity: 0.3;
-  color: #000;
+  opacity: 0.5;
+  color: #111;
+}
+
+.form-header .form-content {
+  margin-top: 65px;
 }
