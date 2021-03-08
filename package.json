@@ -10,7 +10,6 @@
     "@testing-library/user-event": "^12.1.10",
     "antd": "^4.12.3",
     "axios": "^0.21.1",
-
     "bfj": "6.1.1",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "crypto-js": "^4.0.0",
