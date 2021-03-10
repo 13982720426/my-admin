@@ -1,0 +1,12 @@
+
+$color:blue;
+$fs12:12px;
+
+//报错暂时不使用webkit
+@mixin webkit($attr, $value) {
+    -webkit-#{$attr}:$value;
+    -moz-#{$attr}:$value;
+    -ms-#{$attr}:$value;
+    -o-#{$attr}:$value;
+    #{$attr}:$value;
+  }
