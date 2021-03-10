@@ -1,0 +1,11 @@
+
+$color:blue;
+$fs12:12px;
+
+@mixin webkit($color, $width) {
+    border: {
+      color: $color;
+      width: $width;
+      style: dashed;
+    }
+  }
