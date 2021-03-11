@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import { Layout } from 'antd'
 import './layout.scss'
 
-import LayoutAside from './components/aside'
-import LayoutHeader from './components/header'
+import LayoutAside from './components/Aside'
+import LayoutHeader from './components/Header'
+import ContainerMain from '../../components/containerMain/index'
 
 const { Sider, Header, Content } = Layout
 
@@ -22,7 +23,7 @@ class Index extends Component {
           <Sider width="250px">
             <LayoutAside />
           </Sider>
-          <Content className="layout-main">内容</Content>
+          <ContainerMain />
         </Layout>
       </Layout>
     )

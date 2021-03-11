@@ -3,7 +3,7 @@ import { Redirect, Route } from 'react-router-dom'
 
 import { getToken } from '../../utils/session'
 
-console.log(getToken())
+// console.log(getToken())
 const PrivateRouter = ({ component: Component, ...rest }) => {
   return (
     <Route

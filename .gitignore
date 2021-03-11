@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+#历史文件
+.history
+
 # testing
 /coverage
 
