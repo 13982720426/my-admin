@@ -20,22 +20,22 @@ const router = [
         icon: '',
         // children: [
         //   {
-        //     key: '/home/navigation/dropdowna',
+        //     key: '/index/user/add/1',
         //     title: '部门列表',
         //     icon: '',
         //   },
         //   {
-        //     key: '/home/navigation/menua',
+        //     key: '/index/user/add/2',
         //     title: '添加部门',
         //     icon: '',
         //     children: [
         //       {
-        //         key: '/home/navigation/dropdownb',
+        //         key: '/index/user/add/2/1',
         //         title: '部门列表',
         //         icon: '',
         //       },
         //       {
-        //         key: '/home/navigation/menub',
+        //         key: '/index/user/add/2/2',
         //         title: '添加部门',
         //         icon: '',
         //       },
