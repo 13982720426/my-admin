@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 
 import { UserOutlined } from '@ant-design/icons'
 
@@ -12,7 +12,42 @@ const { SubMenu } = Menu
 class AsidMenu extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      selectedKeys: [],
+      openKeys: [],
+    }
+  }
+  componentDidMount() {
+    const pathname = this.props.location.pathname
+    const menuKey = pathname.split('/').slice(0, 3).join('/') //拆分字符串为数组，取前三个，将数组转化成字符串
+
+    const menuHigh = {
+      selectedKeys: pathname,
+      openKeys: menuKey,
+    }
+    this.selectMenuHigh(menuHigh)
+  }
+
+  //选择菜单
+  selectMenu = ({ item, key, keyPath, domEvent }) => {
+    const menuHigh = {
+      selectedKeys: key,
+      openKeys: keyPath[keyPath.length - 1], //数组的长度减一，即是数组的最后一项
+    }
+    this.selectMenuHigh(menuHigh)
+  }
+  openMenu = (openKeys) => {
+    this.setState({
+      openKeys: [openKeys[openKeys.length - 1]],
+    })
+  }
+
+  //菜单高光
+  selectMenuHigh = ({ selectedKeys, openKeys }) => {
+    this.setState({
+      selectedKeys: [selectedKeys],
+      openKeys: [openKeys],
+    })
   }
 
   //无级菜单
@@ -40,13 +75,16 @@ class AsidMenu extends Component {
   }
 
   render() {
+    const { selectedKeys, openKeys } = this.state
     return (
       <Fragment>
         <Menu
+          onOpenChange={this.openMenu}
+          onClick={this.selectMenu}
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
+          selectedKeys={selectedKeys}
+          openKeys={openKeys}
           style={{ height: '100%' }}
         >
           {Router &&
@@ -61,4 +99,4 @@ class AsidMenu extends Component {
   }
 }
 
-export default AsidMenu
+export default withRouter(AsidMenu)
