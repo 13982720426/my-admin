@@ -47,16 +47,16 @@ const router = [
   },
   {
     title: '部门管理',
-    icon: 'bars',
-    key: '/home/navigation',
+    icon: 'laptop',
+    key: '/index/department',
     children: [
       {
-        key: '/home/navigation/dropdown',
+        key: '/index/department/list',
         title: '部门列表',
         icon: '',
       },
       {
-        key: '/home/navigation/menu',
+        key: '/index/department/add',
         title: '添加部门',
         icon: '',
       },

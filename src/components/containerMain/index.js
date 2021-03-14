@@ -1,12 +1,15 @@
 import React from 'react'
 import { Switch } from 'react-router-dom'
 
-//组件
-import User from '../../views/uesr/index'
-import UserAdd from '../../views/uesr/Add'
+// import UserList from '../../views/user/List'
+// import UserAdd from '../../views/user/Add'
+// import DepartmentList from '../../views/department/List'
+// import DepartmentAdd from '../../views/department/Add'
 
 //私有化组件
-import PrivateRouter from '../privsteRouter/index'
+import PrivateRouter from '../privsteRouter/Index'
+
+import components from './components'
 
 class ContainerMain extends React.Component {
   constructor(props) {
@@ -16,8 +19,28 @@ class ContainerMain extends React.Component {
   render() {
     return (
       <Switch>
-        <PrivateRouter exact path="/index/user/list" component={User} />
+        {components.map((item) => {
+          return (
+            <PrivateRouter
+              exact
+              key={item.path}
+              path={item.path}
+              component={item.component}
+            />
+          )
+        })}
+        {/* <PrivateRouter exact path="/index/user/list" component={UserList} />
         <PrivateRouter exact path="/index/user/add" component={UserAdd} />
+        <PrivateRouter
+          exact
+          path="/index/department/list"
+          component={DepartmentList}
+        />
+        <PrivateRouter
+          exact
+          path="/index/department/add"
+          component={DepartmentAdd}
+        /> */}
       </Switch>
     )
   }
