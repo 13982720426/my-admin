@@ -29,21 +29,15 @@ export default class DepartmentAdd extends Component {
     this.setState({
       loading: true,
     })
-    DepartmentAddApi(value)
-      .then((response) => {
-        const data = response.data
-        message.info(data.message)
-        this.setState({
-          loading: false,
-        })
-        //重置表单
-        this.refs.form.resetFields()
+    DepartmentAddApi(value).then((response) => {
+      const data = response.data
+      message.info(data.message)
+      this.setState({
+        loading: false,
       })
-      .catch((error) => {
-        this.setState({
-          loading: false,
-        })
-      })
+      //重置表单
+      this.refs.form.resetFields()
+    })
   }
   render() {
     return (
