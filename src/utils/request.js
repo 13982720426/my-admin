@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getUsername, getToken } from './cookies'
 
 //第一步 创建实例
 const service = axios.create({
@@ -6,10 +7,13 @@ const service = axios.create({
   timeout: 5000,
 })
 
-//第二步 请求拦截器
+//第二步 请求拦截器(请求头)
 service.interceptors.request.use(
   function (config) {
     // 在发送请求之前做些什么
+    config.headers['Token'] = getToken()
+    config.headers['Username'] = getUsername()
+
     return config
   },
   function (error) {
@@ -18,7 +22,7 @@ service.interceptors.request.use(
   }
 )
 
-//第三步 响应拦截器
+//第三步 响应拦截器(响应头)
 service.interceptors.response.use(
   function (response) {
     // 对响应数据做点什么

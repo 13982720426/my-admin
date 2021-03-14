@@ -16,7 +16,7 @@ import { Login } from '../../api/account'
 //密码加密
 import CryptoJs from 'crypto-js'
 
-import { setToken } from '../../utils/session'
+import { setToken, setUsername } from '../../utils/cookies'
 
 class LoginForm extends Component {
   constructor() {
@@ -42,14 +42,13 @@ class LoginForm extends Component {
     })
     Login(requestData)
       .then((response) => {
-        // console.log(response)
         this.setState({
           loading: false,
         })
         const data = response.data.data
-        console.log(data)
         //存储token
         setToken(data.token)
+        setUsername(data.username)
         //路由跳转
         this.props.history.push('/index')
       })

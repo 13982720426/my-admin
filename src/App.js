@@ -6,7 +6,7 @@ import Index from './views/index/Index'
 import './App.css'
 
 //私有化组件
-import PrivateRouter from './components/privsteRouter/index'
+import PrivateRouter from './components/privsteRouter/Index'
 class App extends Component {
   constructor(props) {
     super(props)
