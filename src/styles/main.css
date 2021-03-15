@@ -159,3 +159,11 @@ a:focus, *:focus {
 .fr {
   float: right;
 }
+
+.inline-button button + button {
+  margin-left: 10px;
+}
+
+.table-wrap {
+  padding: 30px;
+}
