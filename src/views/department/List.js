@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react'
-import { Form, Input, Button, Table, Switch, message } from 'antd'
+import { Form, Input, Button, Table, Switch, message, Modal } from 'antd'
+import { Link } from 'react-router-dom'
 
-import { GetList, Delete } from '../../api/department'
+import { GetList, Delete, Status } from '../../api/department'
 // import { GetList, Delete } from '@api/department'//webpack路径配置有bug，无法找到
 
 export default class DepartmentList extends Component {
@@ -14,6 +15,12 @@ export default class DepartmentList extends Component {
       keyWork: '',
       //复选框数据
       selectedRowKeys: [],
+      //警告弹窗
+      visible: false,
+      //弹窗确定按钮
+      confirmLoading: false,
+      //id
+      id: '',
       //表头
       columns: [
         { title: '部门名称', dataIndex: 'name', key: 'name' },
@@ -24,6 +31,9 @@ export default class DepartmentList extends Component {
           render: (text, rowData) => {
             return (
               <Switch
+                onChange={() => {
+                  this.onHandlerSwitch(rowData)
+                }}
                 checkedChildren="启用"
                 unCheckedChildren="禁用"
                 defaultChecked={rowData.status === '1' ? true : false}
@@ -40,7 +50,28 @@ export default class DepartmentList extends Component {
           render: (text, rowData) => {
             return (
               <div className="inline-button">
-                <Button type="primary">编辑</Button>
+                <Button
+                  type="primary"
+                  //   onClick={() => this.onHandlerEdit(rowData.id)}
+                >
+                  {/* <Link to={'/index/department/add?id=' + rowData.id}> */}
+
+                  {/* <Link
+                    to={{
+                      pathname: '/index/department/add',
+                      query: { id: rowData.id },
+                    }}
+                  > */}
+
+                  <Link
+                    to={{
+                      pathname: '/index/department/add',
+                      state: { id: rowData.id },
+                    }}
+                  >
+                    编辑
+                  </Link>
+                </Button>
                 <Button onClick={() => this.onHandlerDelete(rowData.id)}>
                   删除
                 </Button>
@@ -88,14 +119,26 @@ export default class DepartmentList extends Component {
     this.loadDada()
   }
   //删除
-  onHandlerDelete = (id) => {
+  onHandlerDelete(id) {
     if (!id) {
       return false
     }
-    Delete({ id: id }).then((response) => {
+    this.setState({
+      visible: true,
+      id,
+    })
+  }
+  //禁启用
+  onHandlerSwitch(data) {
+    if (!data.status) {
+      return false
+    }
+    const requestData = {
+      id: data.id,
+      status: data.status === '1' ? false : true,
+    }
+    Status(requestData).then((response) => {
       message.info(response.data.message)
-      //请求数据
-      this.loadDada()
     })
   }
 
@@ -103,6 +146,19 @@ export default class DepartmentList extends Component {
   onCheckebox = (selectedRowKeys) => {
     // this.setState({ selectedRowKeys })
     console.log(selectedRowKeys)
+  }
+
+  //弹窗
+  modalThen = () => {
+    Delete({ id: this.state.id }).then((response) => {
+      message.info(response.data.message)
+      this.loadDada()
+      this.setState({
+        visible: false,
+        id: '',
+        confirmLoading: false,
+      })
+    })
   }
 
   render() {
@@ -131,6 +187,22 @@ export default class DepartmentList extends Component {
             bordered
           ></Table>
         </div>
+        <Modal
+          title="Modal"
+          visible={this.state.visible}
+          onOk={this.modalThen}
+          onCancel={() => {
+            this.setState({ visible: false })
+          }}
+          okText="确认"
+          cancelText="取消"
+          confirmLoading={this.state.confirmLoading}
+        >
+          <p className="text-center">
+            确定删除此信息？
+            <strong className="color-red"> 删除后无法恢复！</strong>
+          </p>
+        </Modal>
       </Fragment>
     )
   }

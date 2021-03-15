@@ -32,9 +32,9 @@ service.interceptors.response.use(
     if (data.resCode !== 0) {
       //resCode不成功，全局的错误拦截
       message.info(data.message) //全局的错误拦截
-      if (data.resCode === 1024) {
-        alert(111)
-      }
+      //   if (data.resCode === 1024) {
+      //     alert(111)
+      //   }
       return Promise.reject(response)
     } else return response //resCode成功
   },

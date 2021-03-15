@@ -167,3 +167,11 @@ a:focus, *:focus {
 .table-wrap {
   padding: 30px;
 }
+
+.text-center {
+  text-align: center;
+}
+
+.color-red {
+  color: #ff0000;
+}

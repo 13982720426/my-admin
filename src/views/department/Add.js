@@ -1,17 +1,41 @@
 import React, { Component } from 'react'
 
 import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
-import { DepartmentAddApi } from '../../api/department'
+import { DepartmentAddApi, Detailed, Edit } from '../../api/department'
 export default class DepartmentAdd extends Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: false,
+      id: '',
       formLayout: {
         labelCol: { span: 2 },
-        wrapperCol: { span: 22 },
+        wrapperCol: { span: 20 },
       },
     }
+  }
+
+  componentWillMount() {
+    if (this.props.location.state) {
+      this.setState({
+        id: this.props.location.state.id,
+      })
+    }
+  }
+
+  componentDidMount() {
+    console.log(this.state)
+    this.getDetailed()
+    // console.log(this.props.location.query.id)
+    // console.log(this.props.location.state.id)
+  }
+  getDetailed = () => {
+    if (!this.props.location.state) {
+      return false
+    }
+    Detailed({ id: this.state.id }).then((response) => {
+      this.refs.form.setFieldsValue(response.data.data)
+    })
   }
   onSubmit = (value) => {
     if (!value.name) {
@@ -29,6 +53,12 @@ export default class DepartmentAdd extends Component {
     this.setState({
       loading: true,
     })
+    //确定按钮是添加还是编辑
+    this.state.id ? this.onHandlerEdit(value) : this.onHandlerAdd(value)
+  }
+
+  //添加信息
+  onHandlerAdd = (value) => {
     DepartmentAddApi(value).then((response) => {
       const data = response.data
       message.info(data.message)
@@ -39,6 +69,25 @@ export default class DepartmentAdd extends Component {
       this.refs.form.resetFields()
     })
   }
+  //编辑信息
+  onHandlerEdit = (value) => {
+    const requestData = value
+    requestData.id = this.state.id
+    Edit(requestData)
+      .then((response) => {
+        const data = response.data
+        message.info(data.message)
+        this.setState({
+          loading: false,
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        })
+      })
+  }
+
   render() {
     return (
       <Form
