@@ -87,7 +87,6 @@ export default class DepartmentAdd extends Component {
         })
       })
   }
-
   render() {
     return (
       <Form

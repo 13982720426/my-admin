@@ -9,6 +9,10 @@ export default class DepartmentList extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      //flag
+      flag: false,
+      //表格加载
+      loadingTable: false,
       //请求参数
       pageNumber: 1,
       pageSize: 10,
@@ -34,6 +38,7 @@ export default class DepartmentList extends Component {
                 onChange={() => {
                   this.onHandlerSwitch(rowData)
                 }}
+                loading={rowData.id == this.state.id}
                 checkedChildren="启用"
                 unCheckedChildren="禁用"
                 defaultChecked={rowData.status === '1' ? true : false}
@@ -99,17 +104,26 @@ export default class DepartmentList extends Component {
     if (keyWork) {
       requestData.name = keyWork
     }
-    GetList(requestData).then((response) => {
-      const responseData = response.data.data
-      if (responseData.data) {
-        this.setState({
-          data: responseData.data,
-        })
-      }
-    })
+    this.setState({ loadingTable: true })
+    GetList(requestData)
+      .then((response) => {
+        const responseData = response.data.data
+        if (responseData.data) {
+          this.setState({
+            data: responseData.data,
+          })
+        }
+        this.setState({ loadingTable: false })
+      })
+      .catch((error) => {
+        this.setState({ loadingTable: false })
+      })
   }
   //搜索
   onFinish = (value) => {
+    if (this.state.loadingTable) {
+      return false
+    }
     this.setState({
       keyWork: value.name,
       pageNumber: 1,
@@ -121,8 +135,11 @@ export default class DepartmentList extends Component {
   //删除
   onHandlerDelete(id) {
     if (!id) {
-      return false
+      //批量删除
+      if (this.state.selectedRowKeys.length === 0) return false
+      id = this.state.selectedRowKeys.join()
     }
+    console.log(id)
     this.setState({
       visible: true,
       id,
@@ -133,19 +150,31 @@ export default class DepartmentList extends Component {
     if (!data.status) {
       return false
     }
+    if (this.state.flag) {
+      return false
+    }
     const requestData = {
       id: data.id,
       status: data.status === '1' ? false : true,
     }
-    Status(requestData).then((response) => {
-      message.info(response.data.message)
-    })
+    this.setState({ id: data.id }) //第一种做法，用组件本身异步
+    // this.setState({ flag: true }) //第二种,自己做开关
+
+    Status(requestData)
+      .then((response) => {
+        message.info(response.data.message)
+        this.setState({ id: '' })
+        // this.setState({ flag: false })
+      })
+      .catch((error) => {
+        this.setState({ id: '' })
+        // this.setState({ flag: false })
+      })
   }
 
   //复选框
   onCheckebox = (selectedRowKeys) => {
-    // this.setState({ selectedRowKeys })
-    console.log(selectedRowKeys)
+    this.setState({ selectedRowKeys })
   }
 
   //弹窗
@@ -157,12 +186,13 @@ export default class DepartmentList extends Component {
         visible: false,
         id: '',
         confirmLoading: false,
+        selectedRowKeys: [],
       })
     })
   }
 
   render() {
-    const { columns, data } = this.state
+    const { columns, data, loadingTable } = this.state
     const rowSelection = {
       onChange: this.onCheckebox,
     }
@@ -180,15 +210,17 @@ export default class DepartmentList extends Component {
         </Form>
         <div className="table-wrap">
           <Table
+            loading={loadingTable}
             rowSelection={rowSelection}
             rowKey="id"
             columns={columns}
             dataSource={data}
             bordered
           ></Table>
+          <Button onClick={() => this.onHandlerDelete()}>批量删除</Button>
         </div>
         <Modal
-          title="Modal"
+          title="提示"
           visible={this.state.visible}
           onOk={this.modalThen}
           onCancel={() => {
