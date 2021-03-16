@@ -1,8 +1,9 @@
-import React, { Component } from 'react'
-import { Table } from 'antd'
+import React, { Component, Fragment } from 'react'
+import { Table, Pagination, Row, Col, Button } from 'antd'
 import { TableList } from '../../api/common'
 
 import requestUrl from '../../api/requestUrl'
+import PropTypes from 'prop-types'
 
 export default class TableComponent extends Component {
   constructor(props) {
@@ -16,6 +17,8 @@ export default class TableComponent extends Component {
       data: [],
       //加载提示
       loadingTable: false,
+      //页码
+      total: 0,
     }
   }
 
@@ -44,6 +47,7 @@ export default class TableComponent extends Component {
         if (responseData.data) {
           this.setState({
             data: responseData.data,
+            total: responseData.total,
           })
         }
         this.setState({ loadingTable: false })
@@ -52,8 +56,35 @@ export default class TableComponent extends Component {
         this.setState({ loadingTable: false })
       })
   }
+  //复选框
   onCheckebox = (value) => {
-    console.log(value)
+    // console.log(value)
+  }
+  //当前页
+  onChangeCurrnePage = (value) => {
+    // console.log(value)
+    this.setState(
+      {
+        pageNumber: value,
+      },
+      () => {
+        //setState第二个参数是进行异步回调，当改完值需要用到时则使用异步回调方法
+        this.loadDada()
+      }
+    )
+  }
+  //下拉页码
+  onShowSizeChange = (value, page) => {
+    this.setState(
+      {
+        pageNumber: 1,
+        pageSize: page,
+      },
+      () => {
+        //setState第二个参数是进行异步回调，当改完值需要用到时则使用异步回调方法
+        this.loadDada()
+      }
+    )
   }
 
   render() {
@@ -64,14 +95,44 @@ export default class TableComponent extends Component {
       onChange: this.onCheckebox,
     }
     return (
-      <Table
-        loading={loadingTable}
-        rowKey={rowKey || 'id'}
-        rowSelection={onCheckebox ? rowSelection : null}
-        columns={thead}
-        dataSource={this.state.data}
-        bordered
-      />
+      <Fragment>
+        <Table
+          pagination={false}
+          loading={loadingTable}
+          rowKey={rowKey || 'id'}
+          rowSelection={onCheckebox ? rowSelection : null}
+          columns={thead}
+          dataSource={this.state.data}
+          bordered
+        />
+        <Row>
+          <Col span={8}>
+            {this.props.batchButton && (
+              <Button onClick={() => this.onHandlerDelete()}>批量删除</Button>
+            )}
+          </Col>
+          <Col span={16}>
+            <Pagination
+              onShowSizeChange={this.onShowSizeChange}
+              onChange={this.onChangeCurrnePage}
+              className="pull-right"
+              //   total={this.state.total}
+              total={15}
+              showSizeChanger
+              showQuickJumper
+              showTotal={(total) => `Total ${total} items`}
+            />
+          </Col>
+        </Row>
+      </Fragment>
     )
   }
+}
+//校验数据类型
+TableComponent.propTypes = {
+  config: PropTypes.object,
+}
+//默认值
+TableComponent.defaultProps = {
+  batchButton: true,
 }
