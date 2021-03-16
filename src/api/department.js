@@ -16,7 +16,7 @@ export function DepartmentAddApi(data) {
  */
 export function GetList(data) {
   return service.request({
-    url: '/department/list/',
+    url: data.url,
     method: 'post',
     data: data, //请求类型为 post时
     // params: data, //请求类型为 get时
