@@ -24,6 +24,7 @@ export default class DepartmentList extends Component {
       visible: false,
       //弹窗确定按钮
       confirmLoading: false,
+
       //id
       id: '',
       //表头
@@ -32,6 +33,8 @@ export default class DepartmentList extends Component {
         // method: 'post',
         onCheckebox: true,
         // rowKey="id",
+        batchButton: false,
+
         thead: [
           { title: '部门名称', dataIndex: 'name', key: 'name' },
           {
@@ -123,7 +126,7 @@ export default class DepartmentList extends Component {
       if (this.state.selectedRowKeys.length === 0) return false
       id = this.state.selectedRowKeys.join()
     }
-    console.log(id)
+    // console.log(id)
     this.setState({
       visible: true,
       id,
@@ -189,9 +192,7 @@ export default class DepartmentList extends Component {
           </Form.Item>
         </Form>
         <div className="table-wrap">
-          <TableComponent config={this.state.tableConfig} />
-
-          <Button onClick={() => this.onHandlerDelete()}>批量删除</Button>
+          <TableComponent batchButton={true} config={this.state.tableConfig} />
         </div>
         <Modal
           title="提示"
