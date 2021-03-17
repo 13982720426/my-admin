@@ -179,3 +179,7 @@ a:focus, *:focus {
 .pull-right {
   float: right;
 }
+
+.spacing-30 {
+  height: 30px;
+}

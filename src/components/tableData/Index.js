@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
-import { Table, Pagination, Row, Col, Button } from 'antd'
-import { TableList } from '../../api/common'
+import { Table, Pagination, Row, Col, Button, Modal, message } from 'antd'
+import { TableList, TabaDelete } from '../../api/common'
 
 import requestUrl from '../../api/requestUrl'
 import PropTypes from 'prop-types'
@@ -19,13 +19,19 @@ export default class TableComponent extends Component {
       loadingTable: false,
       //页码
       total: 0,
+      //复选框
+      checkboxValue: [],
+      //确认弹窗
+      modalVisible: false,
+      modalconfirmLoading: false,
     }
   }
 
   //生命周期挂载完成
   componentDidMount() {
-    console.log(requestUrl[this.props.config.url])
     this.loadDada()
+    //返回子组件实例
+    this.props.onRef(this) //子组件调用父组件方法，并把子组件实例传递给父组件
   }
 
   //获取列表数据
@@ -56,9 +62,21 @@ export default class TableComponent extends Component {
         this.setState({ loadingTable: false })
       })
   }
+
+  //删除
+  onHandlerDelete(id) {
+    this.setState({
+      modalVisible: true,
+    })
+    if (id) {
+      this.setState({ checkboxValue: [id] })
+    }
+  }
   //复选框
-  onCheckebox = (value) => {
-    // console.log(value)
+  onCheckbox = (checkboxValue) => {
+    this.setState({
+      checkboxValue,
+    })
   }
   //当前页
   onChangeCurrnePage = (value) => {
@@ -87,24 +105,56 @@ export default class TableComponent extends Component {
     )
   }
 
+  //确认弹窗
+  modalThen = () => {
+    //判断是否已选择删除的数据
+    if (this.state.checkboxValue.length === 0) {
+      message.info('请选择需要删除的数据')
+      return false
+    }
+    this.setState({ confirmLoading: true })
+    const id = this.state.checkboxValue.join()
+    const requestData = {
+      url: requestUrl[`${this.props.config.url}Delete`],
+      //   method: this.props.config.method,
+      data: {
+        id,
+      },
+    }
+
+    TabaDelete(requestData).then((response) => {
+      message.info(response.data.message)
+      this.setState({
+        modalVisible: false,
+        id: '',
+        confirmLoading: false,
+        selectedRowKeys: [],
+      })
+      //重新加载数据
+      this.loadDada()
+    })
+  }
+
   render() {
     const { loadingTable } = this.state
-    const { thead, onCheckebox, rowKey } = this.props.config
+    const { thead, onCheckbox, rowKey } = this.props.config
 
     const rowSelection = {
-      onChange: this.onCheckebox,
+      onChange: this.onCheckbox,
     }
     return (
       <Fragment>
+        {/* table组件 */}
         <Table
           pagination={false}
           loading={loadingTable}
           rowKey={rowKey || 'id'}
-          rowSelection={onCheckebox ? rowSelection : null}
+          rowSelection={onCheckbox ? rowSelection : null}
           columns={thead}
           dataSource={this.state.data}
           bordered
         />
+        <div className="spacing-30"></div>
         <Row>
           <Col span={8}>
             {this.props.batchButton && (
@@ -116,14 +166,30 @@ export default class TableComponent extends Component {
               onShowSizeChange={this.onShowSizeChange}
               onChange={this.onChangeCurrnePage}
               className="pull-right"
-              //   total={this.state.total}
-              total={15}
+              total={this.state.total}
               showSizeChanger
               showQuickJumper
               showTotal={(total) => `Total ${total} items`}
             />
           </Col>
         </Row>
+        {/* 确认弹窗 */}
+        <Modal
+          title="提示"
+          visible={this.state.modalVisible}
+          onOk={this.modalThen}
+          onCancel={() => {
+            this.setState({ modalVisible: false })
+          }}
+          okText="确认"
+          cancelText="取消"
+          confirmLoading={this.state.modalconfirmLoading}
+        >
+          <p className="text-center">
+            确定删除此信息？
+            <strong className="color-red"> 删除后无法恢复！</strong>
+          </p>
+        </Modal>
       </Fragment>
     )
   }
