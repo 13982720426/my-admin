@@ -1,9 +1,10 @@
 import React, { Component, Fragment } from 'react'
-import { Table, Pagination, Row, Col, Button, Modal, message } from 'antd'
+import { Form, Input, Button, Modal, message } from 'antd'
 import { TableList, TabaDelete } from '../../api/common'
 
 import requestUrl from '../../api/requestUrl'
 import PropTypes from 'prop-types'
+import TableBasis from './Table'
 
 export default class TableComponent extends Component {
   constructor(props) {
@@ -36,7 +37,7 @@ export default class TableComponent extends Component {
 
   //获取列表数据
   loadDada = () => {
-    const { pageSize, pageNumber } = this.state
+    const { pageSize, pageNumber, keyWork } = this.state
 
     const requestData = {
       url: requestUrl[this.props.config.url],
@@ -45,6 +46,10 @@ export default class TableComponent extends Component {
         pageNumber: pageNumber,
         pageSize: pageSize,
       },
+    }
+    //拼接搜索参数
+    if (keyWork) {
+      requestData.data.name = keyWork
     }
 
     TableList(requestData)
@@ -92,7 +97,7 @@ export default class TableComponent extends Component {
     )
   }
   //下拉页码
-  onShowSizeChange = (value, page) => {
+  onChangeSizePage = (value, page) => {
     this.setState(
       {
         pageNumber: 1,
@@ -104,7 +109,16 @@ export default class TableComponent extends Component {
       }
     )
   }
-
+  //搜索
+  onFinish = (value) => {
+    console.log(value)
+    this.setState({
+      keyWork: value.name,
+      pageNumber: 1,
+      pageSize: 10,
+    })
+    this.loadDada()
+  }
   //确认弹窗
   modalThen = () => {
     //判断是否已选择删除的数据
@@ -137,42 +151,39 @@ export default class TableComponent extends Component {
 
   render() {
     const { loadingTable } = this.state
-    const { thead, onCheckbox, rowKey } = this.props.config
+    const { thead, onCheckbox, rowkey } = this.props.config
 
     const rowSelection = {
       onChange: this.onCheckbox,
     }
     return (
       <Fragment>
-        {/* table组件 */}
-        <Table
-          pagination={false}
-          loading={loadingTable}
-          rowKey={rowKey || 'id'}
-          rowSelection={onCheckbox ? rowSelection : null}
+        {/**筛选 */}
+        <div className="table-wrap">
+          <Form layout="inline" onFinish={this.onFinish}>
+            <Form.Item name="name" label="部门名称">
+              <Input placeholder="请输入部门名称" />
+            </Form.Item>
+            <Form.Item>
+              <Button htmlType="submit" type="primary">
+                搜索
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+
+        {/* table UI组件 */}
+        <TableBasis
           columns={thead}
           dataSource={this.state.data}
-          bordered
+          total={this.state.total}
+          changePageCurrent={this.onChangeCurrnePage}
+          changePageSize={this.onChangeSizePage}
+          handlerDelete={() => this.onHandlerDelete()}
+          rowSelection={onCheckbox ? rowSelection : null}
+          rowkey={rowkey}
         />
-        <div className="spacing-30"></div>
-        <Row>
-          <Col span={8}>
-            {this.props.batchButton && (
-              <Button onClick={() => this.onHandlerDelete()}>批量删除</Button>
-            )}
-          </Col>
-          <Col span={16}>
-            <Pagination
-              onShowSizeChange={this.onShowSizeChange}
-              onChange={this.onChangeCurrnePage}
-              className="pull-right"
-              total={this.state.total}
-              showSizeChanger
-              showQuickJumper
-              showTotal={(total) => `Total ${total} items`}
-            />
-          </Col>
-        </Row>
+
         {/* 确认弹窗 */}
         <Modal
           title="提示"
