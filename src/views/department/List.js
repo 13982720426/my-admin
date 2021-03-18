@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import { Form, Input, Button, Table, Switch, message, Modal } from 'antd'
+import { Button, Switch, message } from 'antd'
 
-import { GetList, Delete, Status } from '../../api/department'
+import { Status } from '../../api/department'
 // import { GetList, Delete } from '@api/department'//webpack路径配置有bug，无法找到
 import TableComponent from '../../components/tableData/Index'
 
@@ -21,27 +21,31 @@ export default class DepartmentList extends Component {
       //表头
       tableConfig: {
         url: 'departmentList',
-        // method: 'post',
         onCheckbox: true,
-        // rowKey="id",
-        batchButton: false,
-
+        // batchButton: false,
         thead: [
-          { title: '部门名称', dataIndex: 'name', key: 'name' },
+          {
+            title: '部门名称',
+            dataIndex: 'name',
+            key: 'name',
+            render: (name, rowData) => {
+              return <a href={rowData.id}>{name}</a>
+            },
+          },
           {
             title: '禁启用',
             dataIndex: 'status',
             key: 'status',
-            render: (text, rowData) => {
+            render: (state, rowData) => {
               return (
                 <Switch
                   onChange={() => {
                     this.onHandlerSwitch(rowData)
                   }}
-                  loading={rowData.id == this.state.id}
+                  loading={rowData.id === this.state.id}
                   checkedChildren="启用"
                   unCheckedChildren="禁用"
-                  defaultChecked={rowData.status === '1' ? true : false}
+                  defaultChecked={state === '1' ? true : false}
                 />
               )
             },
@@ -104,20 +108,6 @@ export default class DepartmentList extends Component {
     this.tableComponent = ref //存储子组件
   }
 
-  //搜索
-  onFinish = (value) => {
-    if (this.state.loadingTable) {
-      return false
-    }
-    this.setState({
-      keyWork: value.name,
-      pageNumber: 1,
-      pageSize: 10,
-    })
-    //请求数据
-    // this.loadDada()
-  }
-
   //禁启用
   onHandlerSwitch(data) {
     if (!data.status) {
@@ -152,23 +142,11 @@ export default class DepartmentList extends Component {
   render() {
     return (
       <Fragment>
-        <Form layout="inline" onFinish={this.onFinish}>
-          <Form.Item name="name" label="部门名称">
-            <Input placeholder="请输入部门名称" />
-          </Form.Item>
-          <Form.Item>
-            <Button htmlType="submit" type="primary">
-              搜索
-            </Button>
-          </Form.Item>
-        </Form>
-        <div className="table-wrap">
-          <TableComponent
-            onRef={this.getChildRef}
-            batchButton={true}
-            config={this.state.tableConfig}
-          />
-        </div>
+        <TableComponent
+          onRef={this.getChildRef}
+          batchButton={true}
+          config={this.state.tableConfig}
+        />
       </Fragment>
     )
   }
