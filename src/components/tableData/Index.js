@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from 'react'
-import { Form, Input, Button, Modal, message } from 'antd'
+import { Modal, message } from 'antd'
 import { TableList, TabaDelete } from '../../api/common'
 
 import requestUrl from '../../api/requestUrl'
 import PropTypes from 'prop-types'
 import TableBasis from './Table'
+import FormSearch from '../formSearch/Index'
 
 export default class TableComponent extends Component {
   constructor(props) {
@@ -13,7 +14,7 @@ export default class TableComponent extends Component {
       //请求参数
       pageNumber: 1,
       pageSize: 10,
-      keyWork: '',
+      searchData: {},
       //数据
       data: [],
       //加载提示
@@ -37,7 +38,7 @@ export default class TableComponent extends Component {
 
   //获取列表数据
   loadDada = () => {
-    const { pageSize, pageNumber, keyWork } = this.state
+    const { pageSize, pageNumber, searchData } = this.state
 
     const requestData = {
       url: requestUrl[this.props.config.url],
@@ -47,11 +48,19 @@ export default class TableComponent extends Component {
         pageSize: pageSize,
       },
     }
-    //拼接搜索参数
-    if (keyWork) {
-      requestData.data.name = keyWork
+    //筛选项的拼接
+    if (Object.keys(searchData).length !== 0) {
+      //检测是否有数据，如果有数据就处理
+      for (let key in searchData) {
+        requestData.data[key] = searchData[key]
+      }
     }
 
+    // if (JSON.stringify(searchData) !== '{}') {
+    //   console.log(searchData)
+    // }
+
+    //请求接口
     TableList(requestData)
       .then((response) => {
         const responseData = response.data.data
@@ -66,6 +75,18 @@ export default class TableComponent extends Component {
       .catch((error) => {
         this.setState({ loadingTable: false })
       })
+  }
+  search = (searchData) => {
+    this.setState(
+      {
+        pageNumber: 1,
+        pageSize: 10,
+        searchData: searchData,
+      },
+      () => {
+        this.loadDada()
+      }
+    )
   }
 
   //删除
@@ -109,16 +130,7 @@ export default class TableComponent extends Component {
       }
     )
   }
-  //搜索
-  onFinish = (value) => {
-    console.log(value)
-    this.setState({
-      keyWork: value.name,
-      pageNumber: 1,
-      pageSize: 10,
-    })
-    this.loadDada()
-  }
+
   //确认弹窗
   modalThen = () => {
     //判断是否已选择删除的数据
@@ -151,7 +163,7 @@ export default class TableComponent extends Component {
 
   render() {
     const { loadingTable } = this.state
-    const { thead, onCheckbox, rowkey } = this.props.config
+    const { thead, onCheckbox, rowkey, formItem } = this.props.config
 
     const rowSelection = {
       onChange: this.onCheckbox,
@@ -159,18 +171,7 @@ export default class TableComponent extends Component {
     return (
       <Fragment>
         {/**筛选 */}
-        <div className="table-wrap">
-          <Form layout="inline" onFinish={this.onFinish}>
-            <Form.Item name="name" label="部门名称">
-              <Input placeholder="请输入部门名称" />
-            </Form.Item>
-            <Form.Item>
-              <Button htmlType="submit" type="primary">
-                搜索
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
+        <FormSearch formItem={formItem} search={this.search} />
 
         {/* table UI组件 */}
         <TableBasis

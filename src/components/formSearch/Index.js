@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { Button, Form, Input, Select, InputNumber, Radio, message } from 'antd'
+import { Button, Form, Input, Select, InputNumber, Radio } from 'antd'
 import PropTypes from 'prop-types'
-import { requestData } from '../../api/common'
-import requestUrl from '../../api/requestUrl'
+
+import Global from '../../js/global'
 
 const { Option } = Select
-export default class FormCom extends Component {
+export default class FormSearch extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -122,6 +122,7 @@ export default class FormCom extends Component {
         formList.push(this.inputElem(item))
       }
       if (item.type === 'Select') {
+        item.options = Global[item.optionsKey]
         formList.push(this.selectElem(item))
       }
       if (item.type === 'InputNumber') {
@@ -135,34 +136,19 @@ export default class FormCom extends Component {
   }
   onSubmit = (value) => {
     //添加、修改
-
-    //传入的submit
-    if (this.props.submit) {
-      this.props.submit(value)
-      return false
+    const searchData = {}
+    for (let key in value) {
+      if (value[key] !== undefined && value[key] !== '') {
+        searchData[key] = value[key]
+      }
     }
-
-    const data = {
-      url: requestUrl[this.props.formConfig.url],
-      data: value,
-    }
-    this.setState({ loading: true })
-    requestData(data)
-      .then((response) => {
-        const responseData = response.data
-        //提示
-        message.info(responseData.message)
-        //取消按钮加载
-        this.setState({ loading: false })
-      })
-      .catch((error) => {
-        this.setState({ loading: false })
-      })
+    this.props.search(searchData)
   }
 
   render() {
     return (
       <Form
+        layout="inline"
         ref="form"
         onFinish={this.onSubmit}
         initialValues={this.props.formConfig.initValue}
@@ -171,19 +157,18 @@ export default class FormCom extends Component {
         {this.initFormItem()}
         <Form.Item>
           <Button loading={this.state.loading} type="primary" htmlType="submit">
-            确定
+            搜索
           </Button>
         </Form.Item>
       </Form>
     )
   }
 }
-
 //校验数据类型
-FormCom.propTypes = {
+FormSearch.propTypes = {
   formConfig: PropTypes.object,
 }
 //默认值
-FormCom.defaultProps = {
+FormSearch.defaultProps = {
   formConfig: {},
 }
