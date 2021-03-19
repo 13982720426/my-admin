@@ -46,6 +46,7 @@ export default class DepartmentList extends Component {
                   checkedChildren="启用"
                   unCheckedChildren="禁用"
                   defaultChecked={state === '1' ? true : false}
+                  //   defaultChecked={state === true ? true : false}
                 />
               )
             },
@@ -119,6 +120,7 @@ export default class DepartmentList extends Component {
     const requestData = {
       id: data.id,
       status: data.status === '1' ? false : true,
+      //   status: data.status === false ? false : true,
     }
     this.setState({ id: data.id }) //第一种做法，用组件本身异步
     // this.setState({ flag: true }) //第二种,自己做开关

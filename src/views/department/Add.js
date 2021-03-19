@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 
 import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
-import { DepartmentAddApi, Detailed, Edit } from '../../api/department'
+import { Add, Detailed, Edit } from '../../api/department'
 import FormCom from '../../components/form/Index'
 export default class DepartmentAdd extends Component {
   constructor(props) {
@@ -11,6 +11,11 @@ export default class DepartmentAdd extends Component {
       id: '',
       formConfig: {
         url: 'departmentAdd',
+        initValue: {
+          number: 0,
+          status: true,
+        },
+        setFieldValue: {},
       },
       formLayout: {
         labelCol: { span: 2 },
@@ -24,6 +29,16 @@ export default class DepartmentAdd extends Component {
           required: true,
           style: { width: '200px' },
           placeholder: '请输入部门名称',
+        },
+        {
+          type: 'InputNumber',
+          label: '人员数量',
+          name: 'number',
+          required: true,
+          min: 0,
+          max: 999,
+          style: { width: '200px' },
+          placeholder: '请输入人员数量',
         },
         {
           type: 'Radio',
@@ -41,34 +56,14 @@ export default class DepartmentAdd extends Component {
             },
           ],
         },
+
         {
-          type: 'InputNumber',
-          label: '人员数量',
-          name: 'number',
+          type: 'Input',
+          label: '内容',
+          name: 'content',
           required: true,
-          min: 0,
-          max: 999,
-          style: { width: '200px' },
-          placeholder: '请输入人员数量',
+          placeholder: '请输入描述内容',
         },
-        // {
-        //   type: 'Select',
-        //   label: '部门11名称',
-        //   name: 'namea',
-        //   required: true,
-        //   options: [
-        //     {
-        //       label: '研发部',
-        //       value: 'a',
-        //     },
-        //     {
-        //       label: '行政部',
-        //       value: 'b',
-        //     },
-        //   ],
-        //   style: { width: '150px' },
-        //   placeholder: '请选择部门',
-        // },
       ],
     }
   }
@@ -91,7 +86,13 @@ export default class DepartmentAdd extends Component {
       return false
     }
     Detailed({ id: this.state.id }).then((response) => {
-      this.refs.form.setFieldsValue(response.data.data)
+      this.setState({
+        formConfig: {
+          ...this.state.formConfig, //将formConfig所有数据扩展下来
+          setFieldValue: response.data.data,
+        },
+      })
+      //   this.refs.form.setFieldsValue(response.data.data)
     })
   }
 
@@ -113,6 +114,29 @@ export default class DepartmentAdd extends Component {
         })
       })
   }
+  //添加信息
+  onHandleAdd = (value) => {
+    const requestData = value
+    Add(requestData)
+      .then((response) => {
+        const data = response.data
+        message.info(data.message)
+        this.setState({
+          loading: false,
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        })
+      })
+  }
+
+  //提交表单
+  onHandlerSubmit = (value) => {
+    this.state.id ? this.onHandlerEdit(value) : this.onHandleAdd(value)
+  }
+
   render() {
     return (
       <Fragment>
@@ -120,6 +144,7 @@ export default class DepartmentAdd extends Component {
           formItem={this.state.formItem}
           formLayout={this.state.formLayout}
           formConfig={this.state.formConfig}
+          submit={this.onHandlerSubmit}
         />
       </Fragment>
     )
