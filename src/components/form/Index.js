@@ -18,6 +18,10 @@ export default class FormCom extends Component {
     }
   }
 
+  componentWillReceiveProps({ formConfig }) {
+    this.refs.form.setFieldsValue(formConfig.setFieldValue)
+  }
+
   rules = (item) => {
     const { mesPreix } = this.state
     let rules = []
@@ -129,9 +133,15 @@ export default class FormCom extends Component {
     })
     return formList
   }
-
   onSubmit = (value) => {
     //添加、修改
+
+    //传入的submit
+    if (this.props.submit) {
+      this.props.submit(value)
+      return false
+    }
+
     const data = {
       url: requestUrl[this.props.formConfig.url],
       data: value,
@@ -155,7 +165,7 @@ export default class FormCom extends Component {
       <Form
         ref="form"
         onFinish={this.onSubmit}
-        initialValues={{ status: true, number: 0 }}
+        initialValues={this.props.formConfig.initValue}
         {...this.props.formLayout}
       >
         {this.initFormItem()}
