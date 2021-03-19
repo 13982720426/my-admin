@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 
-import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
+import { message } from 'antd'
 import { Add, Detailed, Edit } from '../../api/department'
 import FormCom from '../../components/form/Index'
 export default class DepartmentAdd extends Component {

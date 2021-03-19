@@ -94,6 +94,22 @@ export default class DepartmentList extends Component {
             },
           },
         ],
+        formItem: [
+          {
+            type: 'Input',
+            label: '部门名称',
+            name: 'name',
+            placeholder: '请输入部门名称',
+          },
+          {
+            type: 'Select',
+            label: '禁启用',
+            name: 'status',
+            placeholder: '请选择',
+            style: { width: '100px' },
+            optionsKey: 'status',
+          },
+        ],
       },
 
       //数据
