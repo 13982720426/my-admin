@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { Button, Form, Input, Select, InputNumber, Radio } from 'antd'
 import PropTypes from 'prop-types'
-
-import Global from '../../js/global'
+import Store from '../../stroe/Index'
 
 const { Option } = Select
 export default class FormSearch extends Component {
@@ -122,7 +121,7 @@ export default class FormSearch extends Component {
         formList.push(this.inputElem(item))
       }
       if (item.type === 'Select') {
-        item.options = Global[item.optionsKey]
+        item.options = Store.getState().config[item.optionsKey]
         formList.push(this.selectElem(item))
       }
       if (item.type === 'InputNumber') {

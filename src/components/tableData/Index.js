@@ -162,7 +162,7 @@ export default class TableComponent extends Component {
   }
 
   render() {
-    const { loadingTable } = this.state
+    // const { loadingTable } = this.state
     const { thead, onCheckbox, rowkey, formItem } = this.props.config
 
     const rowSelection = {
