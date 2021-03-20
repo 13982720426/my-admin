@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { message } from '_antd@4.13.1@antd'
+import { message } from 'antd'
 import { getUsername, getToken } from './cookies'
 
 //第一步 创建实例
