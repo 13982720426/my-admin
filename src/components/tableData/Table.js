@@ -1,31 +1,18 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 import { Table, Row, Col, Button, Pagination } from 'antd'
 
-export default class TableBasis extends Component {
+class TableBasis extends Component {
   render() {
-    const {
-      //   columns,
-      //   dataSource,
-      //   total,
-      //   changePageCurrent,
-      //   changePageSize,
-      //   batchButton,
-      //   handlerDelete,
-      //   rowSelection,
-      //   rowkey,
-      thead,
-    } = this.props.config
+    const { thead } = this.props.config
     return (
       <Fragment>
         <div className="spacing-30"></div>
         <Table
-          //   rowKey={rowkey}
-          //   pagination={false}
-          //   columns={columns}
-          //   dataSource={dataSource}
-          //   rowSelection={rowSelection}
+          rowKey={this.props.rowKey}
+          dataSource={this.props.list}
           columns={thead}
           bordered
         />
@@ -53,8 +40,19 @@ export default class TableBasis extends Component {
 //校验数据类型
 TableBasis.propTypes = {
   columns: PropTypes.object,
+  rowKey: PropTypes.string,
 }
 //默认值
 TableBasis.defaultProps = {
-  columns: [],
+  columns: {},
+  rowKey: 'id',
 }
+
+//把store中的数据映射到这个组件变成props
+const mapStateToProps = (state) => {
+  //mapState会将数据映射成this.props
+  return {
+    list: state.department.departmentList,
+  }
+}
+export default connect(mapStateToProps, null)(TableBasis)

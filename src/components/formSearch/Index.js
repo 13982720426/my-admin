@@ -2,8 +2,13 @@ import React, { Component } from 'react'
 import { Button, Form, Input, Select, InputNumber, Radio } from 'antd'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import {
+  addDepartmentList,
+  updateDepartmentList,
+} from '../../stroe/action/Department'
 import requestUrl from '../../api/requestUrl'
-import { TableList, TabaDelete } from '../../api/common'
+import { TableList } from '../../api/common'
 
 const { Option } = Select
 class FormSearch extends Component {
@@ -139,6 +144,33 @@ class FormSearch extends Component {
     })
     return formList
   }
+
+  search = (params) => {
+    const requestData = {
+      url: requestUrl[params.url],
+      //   method: this.props.config.method,
+      data: {
+        pageNumber: 1,
+        pageSize: 10,
+      },
+    }
+    //筛选项的拼接
+    if (Object.keys(params.searchData).length !== 0) {
+      //检测是否有数据，如果有数据就处理
+      for (let key in params.searchData) {
+        requestData.data[key] = params.searchData[key]
+      }
+    }
+
+    //请求接口
+    TableList(requestData)
+      .then((response) => {
+        const responseData = response.data.data
+        this.props.actions.addData(responseData)
+      })
+      .catch((error) => {})
+  }
+
   onSubmit = (value) => {
     //添加、修改
     const searchData = {}
@@ -147,7 +179,7 @@ class FormSearch extends Component {
         searchData[key] = value[key]
       }
     }
-    this.props.search({ url: 'departmentList', searchData })
+    this.search({ url: 'departmentList', searchData })
   }
 
   render() {
@@ -183,51 +215,15 @@ const mapStateToProps = (state) => ({
 })
 const mapDispatchToProps = (dispatch) => {
   return {
-    search: (params) => {
-      //处理业务逻辑
-
-      const requestData = {
-        url: requestUrl[params.url],
-        //   method: this.props.config.method,
-        data: {
-          pageNumber: 1,
-          pageSize: 10,
-        },
-      }
-      //筛选项的拼接
-      if (Object.keys(params.searchData).length !== 0) {
-        //检测是否有数据，如果有数据就处理
-        for (let key in params.searchData) {
-          requestData.data[key] = params.searchData[key]
-        }
-      }
-
-      // if (JSON.stringify(searchData) !== '{}') {
-      //   console.log(searchData)
-      // }
-
-      //请求接口
-      TableList(requestData)
-        .then((response) => {
-          const responseData = response.data.data
-          dispatch({
-            type: 'GET_DEPARTMENT_LIST',
-            payload: { data: responseData.data },
-          })
-          console.log(responseData.data)
-          //   if (responseData.data) {
-          //     console.log(responseData)
-          //     // this.setState({
-          //     //   data: responseData.data,
-          //     //   total: responseData.total,
-          //     // })
-          //   }
-          //   //   this.setState({ loadingTable: false })
-        })
-        .catch((error) => {
-          this.setState({ loadingTable: false })
-        })
-    },
+    // listData: bindActionCreators(addDepartmentList, dispatch), //单个action做处理
+    // updateData: bindActionCreators(updateDepartmentList, dispatch), //单个action做处理
+    actions: bindActionCreators(
+      {
+        addData: addDepartmentList,
+        updateData: updateDepartmentList,
+      },
+      dispatch
+    ),
   }
 }
 

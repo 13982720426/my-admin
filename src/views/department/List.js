@@ -40,6 +40,7 @@ export default class DepartmentList extends Component {
       tableConfig: {
         url: 'departmentList',
         onCheckbox: true,
+        roeKey: 'id',
         // batchButton: false,
         thead: [
           {
@@ -163,11 +164,7 @@ export default class DepartmentList extends Component {
     return (
       <Fragment>
         <FormSearch formItem={this.state.formItem} />
-        <TableComponent
-          //   onRef={this.getChildRef}
-          //   batchButton={true}
-          config={this.state.tableConfig}
-        />
+        <TableComponent config={this.state.tableConfig} />
       </Fragment>
     )
   }

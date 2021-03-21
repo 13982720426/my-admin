@@ -1,5 +1,5 @@
 import { createStore, combineReducers } from 'redux'
-import department from './action/Department'
+import department from './reducer/Department'
 import job from './action/Job'
 import config from './action/Config'
 
