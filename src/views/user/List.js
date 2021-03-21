@@ -1,5 +1,4 @@
 import React from 'react'
-import { Switch } from 'react-router-dom'
 
 class UserList extends React.Component {
   constructor(props) {

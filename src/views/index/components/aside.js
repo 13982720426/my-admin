@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 
 import AsidMenu from '../../../components/asideMneu/index'
 class Aside extends Component {

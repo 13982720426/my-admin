@@ -4,8 +4,7 @@ import { Button, Switch, message } from 'antd'
 
 import { Status } from '../../api/department'
 // import { GetList, Delete } from '@api/department'//webpack路径配置有bug，无法找到
-import TableComponent from '../../components/tableData/Table'
-import FormSearch from '../../components/formSearch/Index'
+import TableComponent from '../../components/tableData/Index'
 
 export default class DepartmentList extends Component {
   constructor(props) {
@@ -19,23 +18,6 @@ export default class DepartmentList extends Component {
       keyWork: '',
       //id
       id: '',
-      //筛选
-      formItem: [
-        {
-          type: 'Input',
-          label: '部门名称',
-          name: 'name',
-          placeholder: '请输入部门名称',
-        },
-        {
-          type: 'Select',
-          label: '禁启用',
-          name: 'status',
-          placeholder: '请选择',
-          style: { width: '100px' },
-          optionsKey: 'status',
-        },
-      ],
       //表头
       tableConfig: {
         url: 'departmentList',
@@ -112,6 +94,22 @@ export default class DepartmentList extends Component {
             },
           },
         ],
+        formItem: [
+          {
+            type: 'Input',
+            label: '部门名称',
+            name: 'name',
+            placeholder: '请输入部门名称',
+          },
+          {
+            type: 'Select',
+            label: '禁启用',
+            name: 'status',
+            placeholder: '请选择',
+            style: { width: '100px' },
+            optionsKey: 'status',
+          },
+        ],
       },
 
       //数据
@@ -162,10 +160,9 @@ export default class DepartmentList extends Component {
   render() {
     return (
       <Fragment>
-        <FormSearch formItem={this.state.formItem} />
         <TableComponent
-          //   onRef={this.getChildRef}
-          //   batchButton={true}
+          onRef={this.getChildRef}
+          batchButton={true}
           config={this.state.tableConfig}
         />
       </Fragment>
