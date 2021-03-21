@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { Button, Form, Input, Select, InputNumber, Radio } from 'antd'
 import PropTypes from 'prop-types'
-import Store from '../../stroe/Index'
+import { connect } from 'react-redux'
+import requestUrl from '../../api/requestUrl'
+import { TableList, TabaDelete } from '../../api/common'
 
 const { Option } = Select
-export default class FormSearch extends Component {
+class FormSearch extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -15,6 +17,10 @@ export default class FormSearch extends Component {
         Select: '请选择',
       },
     }
+  }
+
+  componentDidMount() {
+    this.onSubmit()
   }
 
   componentWillReceiveProps({ formConfig }) {
@@ -121,7 +127,7 @@ export default class FormSearch extends Component {
         formList.push(this.inputElem(item))
       }
       if (item.type === 'Select') {
-        item.options = Store.getState().config[item.optionsKey]
+        item.options = this.props.config[item.optionsKey]
         formList.push(this.selectElem(item))
       }
       if (item.type === 'InputNumber') {
@@ -141,7 +147,7 @@ export default class FormSearch extends Component {
         searchData[key] = value[key]
       }
     }
-    this.props.search(searchData)
+    this.props.search({ url: 'departmentList', searchData })
   }
 
   render() {
@@ -171,3 +177,58 @@ FormSearch.propTypes = {
 FormSearch.defaultProps = {
   formConfig: {},
 }
+
+const mapStateToProps = (state) => ({
+  config: state.config,
+})
+const mapDispatchToProps = (dispatch) => {
+  return {
+    search: (params) => {
+      //处理业务逻辑
+
+      const requestData = {
+        url: requestUrl[params.url],
+        //   method: this.props.config.method,
+        data: {
+          pageNumber: 1,
+          pageSize: 10,
+        },
+      }
+      //筛选项的拼接
+      if (Object.keys(params.searchData).length !== 0) {
+        //检测是否有数据，如果有数据就处理
+        for (let key in params.searchData) {
+          requestData.data[key] = params.searchData[key]
+        }
+      }
+
+      // if (JSON.stringify(searchData) !== '{}') {
+      //   console.log(searchData)
+      // }
+
+      //请求接口
+      TableList(requestData)
+        .then((response) => {
+          const responseData = response.data.data
+          dispatch({
+            type: 'GET_DEPARTMENT_LIST',
+            payload: { data: responseData.data },
+          })
+          console.log(responseData.data)
+          //   if (responseData.data) {
+          //     console.log(responseData)
+          //     // this.setState({
+          //     //   data: responseData.data,
+          //     //   total: responseData.total,
+          //     // })
+          //   }
+          //   //   this.setState({ loadingTable: false })
+        })
+        .catch((error) => {
+          this.setState({ loadingTable: false })
+        })
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormSearch)
