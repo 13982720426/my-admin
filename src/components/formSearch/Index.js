@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import {
   addDepartmentList,
   updateDepartmentList,
-} from '../../stroe/action/Department'
+} from '../../store/action/Department'
 import requestUrl from '../../api/requestUrl'
 import { TableList } from '../../api/common'
 
@@ -166,6 +166,7 @@ class FormSearch extends Component {
     TableList(requestData)
       .then((response) => {
         const responseData = response.data.data
+
         this.props.actions.addData(responseData)
       })
       .catch((error) => {})
@@ -215,7 +216,7 @@ const mapStateToProps = (state) => ({
 })
 const mapDispatchToProps = (dispatch) => {
   return {
-    // listData: bindActionCreators(addDepartmentList, dispatch), //单个action做处理
+    // addData: bindActionCreators(addDepartmentList, dispatch), //单个action做处理
     // updateData: bindActionCreators(updateDepartmentList, dispatch), //单个action做处理
     actions: bindActionCreators(
       {
