@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import Login from './views/login/Index'
 import Index from './views/index/Index'
 import { Provider } from 'react-redux'
-import Store from './stroe/Index'
+import Store from './store/Index'
 
 import './App.css'
 

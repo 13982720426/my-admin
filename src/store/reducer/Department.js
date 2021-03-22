@@ -5,7 +5,6 @@ const stateData = {
 }
 //部门
 const departmentReducer = function (state = stateData, action) {
-  console.log(action)
   switch (action.type) {
     case addDepartmentListData: {
       return {

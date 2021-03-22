@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import { Table, Row, Col, Button, Pagination } from 'antd'
+import { bindActionCreators } from 'redux'
 
 class TableBasis extends Component {
   render() {
@@ -36,7 +37,6 @@ class TableBasis extends Component {
     )
   }
 }
-
 //校验数据类型
 TableBasis.propTypes = {
   columns: PropTypes.object,
