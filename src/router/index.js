@@ -47,7 +47,7 @@ const router = [
   },
   {
     title: '部门管理',
-    icon: 'laptop',
+    icon: 'bars',
     key: '/index/department',
     children: [
       {
@@ -65,18 +65,10 @@ const router = [
   {
     title: '职位管理',
     icon: 'edit',
-    key: '/home/entry',
+    key: '/index/job',
     children: [
-      {
-        key: '/home/entry/form/basic-form',
-        title: '职位列表',
-        icon: '',
-      },
-      {
-        key: '/home/entry/form/step-form',
-        title: '职位列表',
-        icon: '',
-      },
+      { key: '/index/job/list', title: '职位列表', icon: '' },
+      { key: '/index/job/add', title: '添加职位', icon: '' },
     ],
   },
   {

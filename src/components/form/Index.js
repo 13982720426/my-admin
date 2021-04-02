@@ -3,6 +3,7 @@ import { Button, Form, Input, Select, InputNumber, Radio, message } from 'antd'
 import PropTypes from 'prop-types'
 import { requestData } from '../../api/common'
 import requestUrl from '../../api/requestUrl'
+import SelectComponent from '../select/Index'
 
 const { Option } = Select
 export default class FormCom extends Component {
@@ -87,7 +88,7 @@ export default class FormCom extends Component {
       </Form.Item>
     )
   }
-  //select
+  //selectElem
   selectElem = (item) => {
     const rules = this.rules(item)
     return (
@@ -110,6 +111,21 @@ export default class FormCom extends Component {
       </Form.Item>
     )
   }
+  //SelectComponent
+  SelectComponent = (item) => {
+    const rules = this.rules(item)
+    return (
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        key={item.name}
+        rules={rules}
+      >
+        <SelectComponent url={item.url} propsKey={item.propsKey} />
+      </Form.Item>
+    )
+  }
+
   //初始化
   initFormItem = () => {
     const { formItem } = this.props
@@ -123,6 +139,9 @@ export default class FormCom extends Component {
       }
       if (item.type === 'Select') {
         formList.push(this.selectElem(item))
+      }
+      if (item.type === 'SelectComponent') {
+        formList.push(this.SelectComponent(item))
       }
       if (item.type === 'InputNumber') {
         formList.push(this.inputNumberElem(item))
@@ -146,6 +165,7 @@ export default class FormCom extends Component {
       url: requestUrl[this.props.formConfig.url],
       data: value,
     }
+
     this.setState({ loading: true })
     requestData(data)
       .then((response) => {
