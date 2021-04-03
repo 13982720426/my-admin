@@ -22,7 +22,7 @@ export default class FormCom extends Component {
   componentWillReceiveProps({ formConfig }) {
     this.refs.form.setFieldsValue(formConfig.setFieldValue)
   }
-
+  //校验规则
   rules = (item) => {
     const { mesPreix } = this.state
     let rules = []
@@ -36,8 +36,15 @@ export default class FormCom extends Component {
     }
     return rules
   }
+  //selectComponent 校验方法
+  validatorSelect = (rule, value) => {
+    if (!value || !value[rule.field]) {
+      return Promise.reject('选项不能为空')
+    }
+    return Promise.resolve()
+  }
 
-  //input
+  // input
   inputElem = (item) => {
     const rules = this.rules(item)
     return (
@@ -51,7 +58,7 @@ export default class FormCom extends Component {
       </Form.Item>
     )
   }
-  //inputNumper
+  // inputNumber
   inputNumberElem = (item) => {
     const rules = this.rules(item)
     return (
@@ -65,30 +72,8 @@ export default class FormCom extends Component {
       </Form.Item>
     )
   }
-  //radio禁启用
-  radioElem = (item) => {
-    const rules = this.rules(item)
-    return (
-      <Form.Item
-        label={item.label}
-        name={item.name}
-        key={item.name}
-        rules={rules}
-      >
-        <Radio.Group>
-          {item.options &&
-            item.options.map((elem) => {
-              return (
-                <Radio value={elem.value} key={elem.value}>
-                  {elem.label}
-                </Radio>
-              )
-            })}
-        </Radio.Group>
-      </Form.Item>
-    )
-  }
-  //selectElem
+
+  // select
   selectElem = (item) => {
     const rules = this.rules(item)
     return (
@@ -111,8 +96,26 @@ export default class FormCom extends Component {
       </Form.Item>
     )
   }
-  //SelectComponent
+  // SelectComponent
   SelectComponent = (item) => {
+    const rules = this.rules(item)
+    return (
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        key={item.name}
+        rules={[...rules, { validator: this.validatorSelect }]}
+      >
+        <SelectComponent
+          url={item.url}
+          propsKey={item.propsKey}
+          name={item.name}
+        />
+      </Form.Item>
+    )
+  }
+  // radio
+  radioElem = (item) => {
     const rules = this.rules(item)
     return (
       <Form.Item
@@ -121,17 +124,28 @@ export default class FormCom extends Component {
         key={item.name}
         rules={rules}
       >
-        <SelectComponent url={item.url} propsKey={item.propsKey} />
+        <Radio.Group>
+          {item.options &&
+            item.options.map((elem) => {
+              return (
+                <Radio value={elem.value} key={elem.value}>
+                  {elem.label}
+                </Radio>
+              )
+            })}
+        </Radio.Group>
       </Form.Item>
     )
   }
 
-  //初始化
+  // 初始化
   initFormItem = () => {
     const { formItem } = this.props
+    // 检测是否存在 formItem
     if (!formItem || (formItem && formItem.length === 0)) {
       return false
     }
+    // 循环处理
     const formList = []
     formItem.map((item) => {
       if (item.type === 'Input') {
@@ -154,11 +168,17 @@ export default class FormCom extends Component {
   }
   onSubmit = (value) => {
     //添加、修改
-
     //传入的submit
     if (this.props.submit) {
       this.props.submit(value)
       return false
+    }
+    // 数据格式化
+    const formatFormKey = this.props.formConfig.formatFormKey
+    if (formatFormKey && value[formatFormKey]) {
+      const dataKey = value[formatFormKey] // 临时存储指定 key 数据
+      delete value.parentId // 删除指定的 key
+      value = Object.assign(value, dataKey) // 浅拷贝并合JSON对象
     }
 
     const data = {

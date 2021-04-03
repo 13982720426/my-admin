@@ -16,6 +16,7 @@ export default class DepartmentAdd extends Component {
           status: true,
         },
         setFieldValue: {},
+        formatFormKey: 'parentId',
       },
       formLayout: {
         labelCol: { span: 2 },

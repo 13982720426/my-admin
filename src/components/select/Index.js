@@ -10,22 +10,27 @@ export default class SelectComponent extends Component {
     super()
     this.state = {
       props: props.propsKey,
-      options: [
-        { value: 760, label: '研发部' },
-        { value: 757, label: '行政部' },
-      ],
+      options: [],
+      //change value
+      value: '',
+      name: props.name,
     }
   }
   componentDidMount() {
     this.getSelectList()
   }
+  //请求数据
   getSelectList = () => {
-    console.log(this.state.props)
     const url = this.props.url
     const data = {
       url: requestUrl[url],
       data: {},
     }
+    //不存在url时，阻止往下
+    if (!data.url) {
+      return false
+    }
+    //接口
     requestData(data).then((response) => {
       this.setState({
         options: response.data.data.data,
@@ -34,14 +39,26 @@ export default class SelectComponent extends Component {
     })
   }
 
+  //select onchange
+  onChange = (value) => {
+    this.setState({ value })
+    this.triggerChange(value)
+  }
+  triggerChange = (changedValue) => {
+    const onChange = this.props.onChange
+    if (onChange) {
+      onChange({ [this.state.name]: changedValue })
+    }
+  }
+
   render() {
     const { value, label } = this.state.props
     return (
-      <Select>
+      <Select value={this.state.value} onChange={this.onChange}>
         {this.state.options &&
           this.state.options.map((elem) => {
             return (
-              <Option value={elem[value]} key={elem[value]}>
+              <Option value={elem[value]} key={Number(elem[value])}>
                 {elem[label]}
               </Option>
             )
