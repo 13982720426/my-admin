@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Layout } from 'antd'
 import './layout.scss'
 
-import LayoutAside from './components/Aside'
+import LayoutAside from './components/aside'
 import LayoutHeader from './components/Header'
 import ContainerMain from '../../components/containerMain/index'
 

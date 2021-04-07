@@ -1,38 +1,38 @@
-import service from '../utils/request'
+import service from '../../src/utils/request'
 
 /**
- * 添加部门接口
+ * 添加
  */
 export function Add(data) {
   return service.request({
     url: '/department/add/',
     method: 'post',
-    data: data, //请求类型为 post时
-    // params: data, //请求类型为 get时
+    data,
   })
 }
+
 /**
- * 获取部门列表接口
+ * 列表
  */
 export function GetList(data) {
   return service.request({
     url: data.url,
     method: 'post',
-    data: data, //请求类型为 post时
-    // params: data, //请求类型为 get时
+    data,
   })
 }
+
 /**
- * 删除接口
+ * 删除
  */
 export function Delete(data) {
   return service.request({
     url: '/department/delete/',
     method: 'post',
-    data: data, //请求类型为 post时
-    // params: data, //请求类型为 get时
+    data,
   })
 }
+
 /**
  * 禁启用
  */
@@ -40,8 +40,7 @@ export function Status(data) {
   return service.request({
     url: '/department/status/',
     method: 'post',
-    data: data, //请求类型为 post时
-    // params: data, //请求类型为 get时
+    data,
   })
 }
 
@@ -52,8 +51,7 @@ export function Detailed(data) {
   return service.request({
     url: '/department/detailed/',
     method: 'post',
-    data: data, //请求类型为 post时
-    // params: data, //请求类型为 get时
+    data,
   })
 }
 
@@ -64,7 +62,6 @@ export function Edit(data) {
   return service.request({
     url: '/department/edit/',
     method: 'post',
-    data: data, //请求类型为 post时
-    // params: data, //请求类型为 get时
+    data,
   })
 }

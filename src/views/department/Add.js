@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react'
 import { message } from 'antd'
 import { Add, Detailed, Edit } from '../../api/department'
 import FormCom from '../../components/form/Index'
-export default class DepartmentAdd extends Component {
+class DepartmentAdd extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -36,7 +36,7 @@ export default class DepartmentAdd extends Component {
           name: 'number',
           required: true,
           min: 0,
-          max: 999,
+          max: 100,
           style: { width: '200px' },
           placeholder: '请输入人员数量',
         },
@@ -46,20 +46,13 @@ export default class DepartmentAdd extends Component {
           name: 'status',
           required: true,
           options: [
-            {
-              label: '禁用',
-              value: false,
-            },
-            {
-              label: '启用',
-              value: true,
-            },
+            { label: '禁用', value: false },
+            { label: '启用', value: true },
           ],
         },
-
         {
           type: 'Input',
-          label: '内容',
+          label: '描述',
           name: 'content',
           required: true,
           placeholder: '请输入描述内容',
@@ -67,6 +60,7 @@ export default class DepartmentAdd extends Component {
       ],
     }
   }
+
   componentWillMount() {
     if (this.props.location.state) {
       this.setState({
@@ -76,11 +70,9 @@ export default class DepartmentAdd extends Component {
   }
 
   componentDidMount() {
-    console.log(this.state)
     this.getDetailed()
-    // console.log(this.props.location.query.id)
-    // console.log(this.props.location.state.id)
   }
+
   getDetailed = () => {
     if (!this.props.location.state) {
       return false
@@ -88,15 +80,14 @@ export default class DepartmentAdd extends Component {
     Detailed({ id: this.state.id }).then((response) => {
       this.setState({
         formConfig: {
-          ...this.state.formConfig, //将formConfig所有数据扩展下来
+          ...this.state.formConfig,
           setFieldValue: response.data.data,
         },
       })
-      //   this.refs.form.setFieldsValue(response.data.data)
+      // this.refs.form.setFieldsValue(response.data.data);
     })
   }
-
-  //编辑信息
+  /** 编辑信息 */
   onHandlerEdit = (value) => {
     const requestData = value
     requestData.id = this.state.id
@@ -114,8 +105,8 @@ export default class DepartmentAdd extends Component {
         })
       })
   }
-  //添加信息
-  onHandleAdd = (value) => {
+  /** 添加信息 */
+  onHandlerAdd = (value) => {
     const requestData = value
     Add(requestData)
       .then((response) => {
@@ -131,10 +122,9 @@ export default class DepartmentAdd extends Component {
         })
       })
   }
-
-  //提交表单
+  /** 提交表单 */
   onHandlerSubmit = (value) => {
-    this.state.id ? this.onHandlerEdit(value) : this.onHandleAdd(value)
+    this.state.id ? this.onHandlerEdit(value) : this.onHandlerAdd(value)
   }
 
   render() {
@@ -150,3 +140,4 @@ export default class DepartmentAdd extends Component {
     )
   }
 }
+export default DepartmentAdd

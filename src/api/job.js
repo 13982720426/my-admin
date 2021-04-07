@@ -34,6 +34,18 @@ export function Detailed(data) {
 }
 
 /**
+ * 编辑
+ */
+export function Edit(data) {
+  return service.request({
+    url: '/job/edit/',
+    method: 'post',
+    data: data, //请求类型为 post时
+    // params: data, //请求类型为 get时
+  })
+}
+
+/**
  * 禁启用
  */
 export function Status(data) {

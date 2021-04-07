@@ -38,10 +38,10 @@ export default class FormCom extends Component {
   }
   //selectComponent 校验方法
   validatorSelect = (rule, value) => {
-    if (!value || !value[rule.field]) {
-      return Promise.reject('选项不能为空')
+    if (value || value[rule.field]) {
+      return Promise.resolve()
     }
-    return Promise.resolve()
+    return Promise.reject('选项不能为空')
   }
 
   // input
@@ -166,6 +166,23 @@ export default class FormCom extends Component {
     })
     return formList
   }
+
+  formatData = (value) => {
+    const { formatFormKey, editKey, setFieldValue } = this.props.formConfig
+    //请求数据
+    const requestData = JSON.parse(JSON.stringify(value))
+    //需要格式JOSN对象的key
+    const keyValue = requestData[formatFormKey]
+    if (Object.prototype.toString.call(keyValue) == '[object Object]') {
+      requestData[formatFormKey] = keyValue[formatFormKey]
+    }
+    //判断是否存在‘编辑’状态指定的key
+    if (editKey) {
+      requestData[editKey] = setFieldValue[editKey]
+    }
+    return requestData
+  }
+
   onSubmit = (value) => {
     //添加、修改
     //传入的submit
@@ -173,17 +190,16 @@ export default class FormCom extends Component {
       this.props.submit(value)
       return false
     }
-    // 数据格式化
-    const formatFormKey = this.props.formConfig.formatFormKey
-    if (formatFormKey && value[formatFormKey]) {
-      const dataKey = value[formatFormKey] // 临时存储指定 key 数据
-      delete value.parentId // 删除指定的 key
-      value = Object.assign(value, dataKey) // 浅拷贝并合JSON对象
-    }
 
+    /**
+     * 参数为JSON对象时进行处理
+     */
+    const paramsData = this.formatData(value)
+
+    //请求参数
     const data = {
       url: requestUrl[this.props.formConfig.url],
-      data: value,
+      data: paramsData,
     }
 
     this.setState({ loading: true })

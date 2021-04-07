@@ -7,24 +7,36 @@ import { bindActionCreators } from 'redux'
 
 class TableBasis extends Component {
   render() {
-    const { thead } = this.props.config
+    const {
+      columns,
+      dataSource,
+      total,
+      changePageCurrent,
+      changePageSize,
+      batchButton,
+      handlerDelete,
+      rowSelection,
+      rowkey,
+    } = this.props
     return (
       <Fragment>
-        <div className="spacing-30"></div>
         <Table
-          rowKey={this.props.rowKey}
-          dataSource={this.props.list}
-          columns={thead}
+          pagination={false}
+          rowKey={rowkey}
+          rowSelection={rowSelection}
+          columns={columns}
+          dataSource={dataSource}
           bordered
         />
-        {/* <Row>
+        <div className="spacing-30"></div>
+        <Row>
           <Col span={8}>
             {batchButton && <Button onClick={handlerDelete}>批量删除</Button>}
           </Col>
           <Col span={16}>
             <Pagination
-              onShowSizeChange={changePageSize}
               onChange={changePageCurrent}
+              onShowSizeChange={changePageSize}
               className="pull-right"
               total={total}
               showSizeChanger
@@ -32,27 +44,28 @@ class TableBasis extends Component {
               showTotal={(total) => `Total ${total} items`}
             />
           </Col>
-        </Row> */}
+        </Row>
       </Fragment>
     )
   }
 }
-//校验数据类型
+// 校验数据类型
 TableBasis.propTypes = {
-  columns: PropTypes.object,
-  rowKey: PropTypes.string,
+  columns: PropTypes.array,
+  dataSource: PropTypes.array,
+  total: PropTypes.number,
+  changePageCurrent: PropTypes.func,
+  changePageSize: PropTypes.func,
+  batchButton: PropTypes.bool,
+  rowSelection: PropTypes.object,
+  rowkey: PropTypes.string,
 }
-//默认值
+// 默认
 TableBasis.defaultProps = {
-  columns: {},
-  rowKey: 'id',
+  column: [],
+  dataSource: [],
+  total: 0,
+  batchButton: true,
+  rowkey: 'id',
 }
-
-//把store中的数据映射到这个组件变成props
-const mapStateToProps = (state) => {
-  //mapState会将数据映射成this.props
-  return {
-    list: state.department.departmentList,
-  }
-}
-export default connect(mapStateToProps, null)(TableBasis)
+export default TableBasis

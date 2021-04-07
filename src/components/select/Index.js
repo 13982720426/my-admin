@@ -19,6 +19,23 @@ export default class SelectComponent extends Component {
   componentDidMount() {
     this.getSelectList()
   }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    let { value, name } = nextProps
+    if (!value) {
+      return false
+    }
+    if (Object.prototype.toString.call(value) == '[object Object]') {
+      value = value[name]
+    }
+    if (value != prevState.state) {
+      return {
+        value: value,
+      }
+    }
+    return null
+  }
+
   //请求数据
   getSelectList = () => {
     const url = this.props.url

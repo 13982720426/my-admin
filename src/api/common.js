@@ -14,7 +14,7 @@ export function TableList(params) {
 /**
  * 删除列表
  */
-export function TabaDelete(params) {
+export function TableDelete(params) {
   return service.request({
     url: params.url,
     method: params.method || 'post',
