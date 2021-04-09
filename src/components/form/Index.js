@@ -114,6 +114,25 @@ export default class FormCom extends Component {
       </Form.Item>
     )
   }
+  // 插槽
+  slotElem = (item) => {
+    const rules = this.rules(item)
+    return (
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        key={item.name}
+        rules={rules}
+      >
+        {/* {this.props.children
+          ? this.props.children.filter((elem) => elem.ref == item.slotName)[0]
+          : this.props.children} */}
+        {this.props.children && Array.isArray(this.props.children)
+          ? this.props.children.filter((elem) => elem.ref === item.slotName)
+          : this.props.children}
+      </Form.Item>
+    )
+  }
   // radio
   radioElem = (item) => {
     const rules = this.rules(item)
@@ -162,6 +181,9 @@ export default class FormCom extends Component {
       }
       if (item.type === 'Radio') {
         formList.push(this.radioElem(item))
+      }
+      if (item.type === 'Slot') {
+        formList.push(this.slotElem(item))
       }
     })
     return formList
@@ -225,6 +247,7 @@ export default class FormCom extends Component {
         {...this.props.formLayout}
       >
         {this.initFormItem()}
+        {console.log(this.props.children)}
         <Form.Item>
           <Button loading={this.state.loading} type="primary" htmlType="submit">
             确定

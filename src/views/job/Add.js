@@ -1,14 +1,23 @@
 import React, { Component, Fragment } from 'react'
 
-import { message } from 'antd'
+import { message, Select } from 'antd'
 import { Add, Detailed, Edit } from '../../api/job'
 import FormCom from '../../components/form/Index'
+import SelectCom from '../../components/select/Index'
+import { requestData } from '../../api/common'
+import requestUrl from '../../api/requestUrl'
+const { Option } = Select
 class DepartmentAdd extends Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: false,
       id: this.props.location.state ? this.props.location.state.id : '',
+      //select
+      select: [
+        { value: 10, label: '研发部' },
+        { value: 11, label: '行政部' },
+      ],
       formConfig: {
         url: 'jobAdd',
         editKey: '',
@@ -25,15 +34,11 @@ class DepartmentAdd extends Component {
       },
       formItem: [
         {
-          type: 'SelectComponent',
+          type: 'Slot',
           label: '部门',
           name: 'parentId',
           required: true,
-          url: 'getDepartmentList',
-          propsKey: {
-            value: 'id',
-            label: 'name',
-          },
+          slotName: 'department',
           style: { width: '200px' },
           placeholder: '请选择部门',
         },
@@ -67,9 +72,8 @@ class DepartmentAdd extends Component {
   }
 
   componentDidMount() {
-    console.log(this.state)
-
     this.state.id && this.getDetailed()
+    this.getSelectList()
   }
 
   getDetailed = () => {
@@ -85,6 +89,25 @@ class DepartmentAdd extends Component {
       // this.refs.form.setFieldsValue(response.data.data);
     })
   }
+
+  //请求数据
+  getSelectList = () => {
+    const data = {
+      url: requestUrl['getDepartmentList'],
+    }
+    //不存在url时，阻止往下
+    if (!data.url) {
+      return false
+    }
+    //接口
+    requestData(data).then((response) => {
+      this.setState({
+        select: response.data.data.data,
+      })
+      //   console.log(response.data.data.data)
+    })
+  }
+
   /** 编辑信息 */
   onHandlerEdit = (value) => {
     const requestData = value
@@ -128,12 +151,23 @@ class DepartmentAdd extends Component {
   render() {
     return (
       <Fragment>
-        {/* <FormCom formItem={this.state.formItem} formLayout={this.state.formLayout} formConfig={this.state.formConfig} submit={this.onHandlerSubmit} /> */}
         <FormCom
           formItem={this.state.formItem}
           formLayout={this.state.formLayout}
           formConfig={this.state.formConfig}
-        />
+        >
+          {/**插槽 */}
+          <Select ref="department">
+            {this.state.select &&
+              this.state.select.map((elem) => {
+                return (
+                  <Option value={elem.id} key={elem.id}>
+                    {elem.name}
+                  </Option>
+                )
+              })}
+          </Select>
+        </FormCom>
       </Fragment>
     )
   }

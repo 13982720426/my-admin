@@ -106,7 +106,7 @@ class DepartmentList extends Component {
   }
   /** 生命周期挂载完成 */
   componentDidMount() {
-    Store.subscribe(() => console.log(Store.getState()))
+    // Store.subscribe(() => console.log(Store.getState()))
 
     Store.dispatch(
       addStatus({
