@@ -1,25 +1,30 @@
-import React from 'react';
-import { Switch } from 'react-router-dom';
+import React from 'react'
+import { Switch } from 'react-router-dom'
 // 私有组件方法
-import PrivateRouter from "../privateRouter/Index";
+import PrivateRouter from '../privateRouter/Index'
 /** 自动化工程 */
-import Components from "./components";
+import Components from './components'
 
 class ContainerMain extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {};
+  constructor(props) {
+    super(props)
+    this.state = {}
   }
-  render(){
+  render() {
     return (
-        <Switch>
-          {
-            Components.map(item => {
-              return <PrivateRouter exact key={item.path} path={item.path} component={item.component} />
-            })
-          }
-        </Switch>
+      <Switch>
+        {Components.map((item) => {
+          return (
+            <PrivateRouter
+              exact
+              key={item.path}
+              path={item.path}
+              component={item.component}
+            />
+          )
+        })}
+      </Switch>
     )
   }
 }
-export default ContainerMain;
+export default ContainerMain

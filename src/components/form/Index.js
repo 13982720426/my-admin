@@ -9,7 +9,6 @@ import requestUrl from '@api/requestUrl'
 import SelectComponent from '../select/Index'
 import UploadComponent from '../upload/Index'
 import EditorComponent from '../editor/Index'
-
 // antd
 import {
   Form,
@@ -20,6 +19,8 @@ import {
   Radio,
   message,
   DatePicker,
+  Row,
+  Col,
 } from 'antd'
 // 配置日期语言
 import 'moment/locale/zh-cn'
@@ -34,9 +35,10 @@ class FormCom extends Component {
       loading: false,
       mesPreix: {
         Input: '请输入',
-        Radio: '请选择',
         Editor: '请输入',
+        Radio: '请选择',
         Select: '请选择',
+        SelectComponent: '请选择',
         Date: '请选择',
         Upload: '请上传',
       },
@@ -62,11 +64,11 @@ class FormCom extends Component {
     return rules
   }
   // selcctComponent 校验方法
-  validatorSelect = (rule, value) => {
-    if (value || value[rule.field]) {
+  validatorComponents = (rule, value) => {
+    if (value) {
       return Promise.resolve()
     }
-    return Promise.reject('选项不能为空')
+    return Promise.reject('')
   }
 
   // input
@@ -128,7 +130,7 @@ class FormCom extends Component {
         label={item.label}
         name={item.name}
         key={item.name}
-        rules={[...rules, { validator: this.validatorSelect }]}
+        rules={[...rules, { validator: this.validatorComponents }]}
       >
         <SelectComponent
           url={item.url}
@@ -147,9 +149,9 @@ class FormCom extends Component {
         label={item.label}
         name={item.name}
         key={item.name}
-        rules={[...rules, { validator: this.validatorSelect }]}
+        rules={[...rules, { validator: this.validatorComponents }]}
       >
-        <UploadComponent name={item.name} />
+        <UploadComponent name={item.name} request={item.request} />
       </Form.Item>
     )
   }
@@ -161,13 +163,12 @@ class FormCom extends Component {
         label={item.label}
         name={item.name}
         key={item.name}
-        rules={[...rules, { validator: this.validatorSelect }]}
+        rules={[...rules, { validator: this.validatorComponents }]}
       >
-        <EditorComponent name={item.name} request={item.request} />
+        <EditorComponent name={item.name} />
       </Form.Item>
     )
   }
-
   // 插槽
   slotElem = (item) => {
     const rules = this.rules(item)
@@ -221,6 +222,38 @@ class FormCom extends Component {
       </Form.Item>
     )
   }
+
+  // 内联的控件
+  formItemInlineElem = (item) => {
+    const rules = this.rules(item)
+    return (
+      <Row>
+        <Col
+          span={item.col_label}
+          className="ant-form-item"
+          style={{ textAlign: 'right' }}
+        >
+          <div class="ant-form-item-label">
+            <label for="name" class="ant-form-item-required" title="姓名">
+              {item.label}
+            </label>
+          </div>
+        </Col>
+        <Col span={item.col_control}>
+          <Row>
+            {item.inline_item.map((elem) => {
+              return (
+                <Col span={elem.col} className="form-item-inline-control">
+                  {this.createControl(elem)}
+                </Col>
+              )
+            })}
+          </Row>
+        </Col>
+      </Row>
+    )
+  }
+
   // 栏目
   columnElem = (item) => {
     return (
@@ -238,41 +271,44 @@ class FormCom extends Component {
       return false
     }
     // 循环处理
-    const formList = []
-    formItem.forEach((item) => {
-      // map, filter, reduce
-      if (item.type === 'Input') {
-        formList.push(this.inputElem(item))
-      }
-      if (item.type === 'Select') {
-        formList.push(this.selectElem(item))
-      }
-      if (item.type === 'SelectComponent') {
-        formList.push(this.SelectComponent(item))
-      }
-      if (item.type === 'InputNumber') {
-        formList.push(this.inputNumberElem(item))
-      }
-      if (item.type === 'Radio') {
-        formList.push(this.radioElem(item))
-      }
-      if (item.type === 'Slot') {
-        formList.push(this.slotElem(item))
-      }
-      if (item.type === 'Column') {
-        formList.push(this.columnElem(item))
-      }
-      if (item.type === 'Date') {
-        formList.push(this.dateElem(item))
-      }
-      if (item.type === 'Upload') {
-        formList.push(this.uploadElem(item))
-      }
-      if (item.type === 'Editor') {
-        formList.push(this.editorElem(item))
-      }
-    })
+    let formList = formItem.map((item) => this.createControl(item))
     return formList
+  }
+  // 创建表单控件
+  createControl = (item) => {
+    if (item.type === 'Input') {
+      return this.inputElem(item)
+    }
+    if (item.type === 'Select') {
+      return this.selectElem(item)
+    }
+    if (item.type === 'SelectComponent') {
+      return this.SelectComponent(item)
+    }
+    if (item.type === 'InputNumber') {
+      return this.inputNumberElem(item)
+    }
+    if (item.type === 'Radio') {
+      return this.radioElem(item)
+    }
+    if (item.type === 'Slot') {
+      return this.slotElem(item)
+    }
+    if (item.type === 'Column') {
+      return this.columnElem(item)
+    }
+    if (item.type === 'Date') {
+      return this.dateElem(item)
+    }
+    if (item.type === 'Upload') {
+      return this.uploadElem(item)
+    }
+    if (item.type === 'Editor') {
+      return this.editorElem(item)
+    }
+    if (item.type === 'FormItemInline') {
+      return this.formItemInlineElem(item)
+    }
   }
 
   formatData = (value) => {
