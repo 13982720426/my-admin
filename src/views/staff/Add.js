@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 // antd
 import { message, Row, Col, Radio, DatePicker } from 'antd'
 // API
-import { Add, Detailed } from '@/api/job'
+import { Add, Detailed } from '@/api/staff'
 import { requestData } from '@api/common'
 // url
 import requestUrl from '@api/requestUrl'
@@ -15,13 +15,14 @@ import locale from 'antd/es/date-picker/locale/zh_CN'
 import { nation, face, education } from '@/js/data'
 // 检验
 import { validate_phone } from '@/utils/validate'
-
 class StaffAdd extends Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: false,
       id: this.props.location.state ? this.props.location.state.id : '',
+      // 职员的职位状态
+      job_status: '',
       // select
       select: [
         { value: 10, label: '研发部' },
@@ -50,7 +51,7 @@ class StaffAdd extends Component {
         {
           type: 'Input',
           label: '姓名',
-          name: 'a1',
+          name: 'name',
           required: true,
           style: { width: '200px' },
           placeholder: '请输入姓名',
@@ -58,39 +59,32 @@ class StaffAdd extends Component {
         {
           type: 'Radio',
           label: '性别',
-          name: 'a2',
+          name: 'sex',
           required: true,
           options: [
-            { label: '男', value: 1 },
-            { label: '女', value: 2 },
+            { label: '男', value: true },
+            { label: '女', value: false },
           ],
         },
         {
           type: 'Input',
           label: '身份证',
-          name: 'a3',
+          name: 'card_id',
           required: true,
           placeholder: '请输入身份证',
         },
         {
           type: 'Upload',
           label: '头像',
-          name: 'b3',
           request: true,
-          required: true,
+          name: 'face_img',
           message: '请上传头像',
         },
-        {
-          type: 'Upload',
-          label: '毕业证',
-          name: 'b30',
-          required: true,
-          message: '请上传毕业证',
-        },
+
         {
           type: 'Date',
           label: '出生年月',
-          name: 'a4',
+          name: 'birthday',
           format: 'YYYY/MM',
           mode: 'month',
           required: true,
@@ -98,7 +92,7 @@ class StaffAdd extends Component {
         {
           type: 'Input',
           label: '手机号',
-          name: 'a5',
+          name: 'phone',
           required: true,
           placeholder: '请输入11位数字的手机号',
           rules: [
@@ -117,48 +111,55 @@ class StaffAdd extends Component {
         {
           type: 'Select',
           label: '民族',
-          name: 'a6',
+          name: 'nation',
           required: true,
           options: nation,
-          placeholder: '请选择民族',
+          placeholder: '请输入11位数字的手机号',
         },
         {
           type: 'Select',
           label: '政治面貌',
-          name: 'a7',
+          name: 'political',
           required: true,
           options: face,
-          placeholder: '请选择政治面貌',
+          placeholder: '请输入11位数字的手机号',
         },
         {
           type: 'Input',
           label: '毕业院校',
-          name: 'a8',
+          name: 'school',
           required: true,
         },
         {
           type: 'Select',
           label: '学历',
-          name: 'a9',
+          name: 'education',
           required: true,
           options: education,
         },
         {
           type: 'Input',
           label: '专业',
-          name: 'a10',
+          name: 'major',
           required: true,
+        },
+        {
+          type: 'Upload',
+          label: '毕业证',
+          name: 'diploma_img',
+          required: true,
+          message: '请上传毕业证',
         },
         {
           type: 'Input',
           label: '微信号',
-          name: 'a11',
+          name: 'wechat',
           required: true,
         },
         {
           type: 'Input',
           label: '邮箱',
-          name: 'a12',
+          name: 'email',
           required: true,
         },
         {
@@ -166,32 +167,93 @@ class StaffAdd extends Component {
           label: '就职信息',
         },
         {
-          type: 'Select',
-          label: '职位',
-          name: 'a13',
+          type: 'SelectComponent',
+          label: '部门',
+          url: 'getDepartmentList',
+          name: 'departmen_id',
+          propsKey: {
+            label: 'name',
+            value: 'id',
+          },
           required: true,
           style: { width: '200px' },
-          placeholder: '请选择职位',
+          placeholder: '请选择邮箱',
         },
         {
-          type: 'Slot',
-          label: '职位状态',
-          name: 'a14',
-          slotName: 'jobStatus',
+          type: 'SelectComponent',
+          label: '职位',
+          url: 'jobListAll',
+          name: 'job_id',
+          propsKey: {
+            label: 'jobName',
+            value: 'jobId',
+          },
+          required: true,
+          style: { width: '200px' },
+          placeholder: '请选择邮箱',
+        },
+        {
+          type: 'FormItemInline',
+          label: '职员状态',
+          name: 'name',
+          required: true,
+          style: { width: '200px' },
+          placeholder: '请输入姓名',
+          col_label: 2,
+          col_control: 22,
+          inline_item: [
+            {
+              type: 'Date',
+              label: '入职时间',
+              name: 'job_entry_date',
+              required: true,
+              style: { width: '100%' },
+              placeholder: '请输入姓名',
+              col: 3,
+            },
+            {
+              type: 'Date',
+              label: '转正时间',
+              name: 'job_formal_date',
+              required: true,
+              style: { width: '100%' },
+              placeholder: '请输入姓名',
+              col: 3,
+            },
+            {
+              type: 'Date',
+              label: '离职时间',
+              name: 'job_quit_date',
+              required: true,
+              style: { width: '100%' },
+              placeholder: '请输入姓名',
+              col: 3,
+            },
+          ],
         },
         {
           type: 'Input',
           label: '公司邮箱',
-          name: 'a15',
+          name: 'company_email',
           required: true,
           placeholder: '请输入邮箱',
         },
         {
           type: 'Editor',
           label: '描述',
-          name: 'a16',
+          name: 'introduce',
           required: true,
           placeholder: '请输入描述内容',
+        },
+        {
+          type: 'Radio',
+          label: '禁启用',
+          name: 'status',
+          required: true,
+          options: [
+            { label: '禁用', value: false },
+            { label: '启用', value: true },
+          ],
         },
       ],
     }
@@ -199,7 +261,6 @@ class StaffAdd extends Component {
 
   componentDidMount() {
     this.state.id && this.getDetailed()
-    this.getSelectList()
   }
 
   getDetailed = () => {
@@ -269,7 +330,8 @@ class StaffAdd extends Component {
   onHandlerSubmit = (value) => {
     this.state.id ? this.onHandlerEdit(value) : this.onHandlerAdd(value)
   }
-  //获取富文本内容
+
+  /** 获取富文本内容 */
   handleEditorChange = (value) => {
     console.log(value)
   }
@@ -281,28 +343,8 @@ class StaffAdd extends Component {
           formItem={this.state.formItem}
           formLayout={this.state.formLayout}
           formConfig={this.state.formConfig}
-        >
-          {/** 插槽 */}
-          <div ref="jobStatus">
-            <Row gutter={16}>
-              <Col className="gutter-row" span={4}>
-                <Radio>在职</Radio>
-                <div className="spacing-15"></div>
-                <DatePicker locale={locale} format="YYYY/MM/DD" />
-              </Col>
-              <Col className="gutter-row" span={4}>
-                <Radio>休假</Radio>
-                <div className="spacing-15"></div>
-                <DatePicker locale={locale} format="YYYY/MM/DD" />
-              </Col>
-              <Col className="gutter-row" span={4}>
-                <Radio>离职</Radio>
-                <div className="spacing-15"></div>
-                <DatePicker locale={locale} format="YYYY/MM/DD" />
-              </Col>
-            </Row>
-          </div>
-        </FormCom>
+          submit={this.onHandlerSubmit}
+        ></FormCom>
       </Fragment>
     )
   }
