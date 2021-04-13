@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react'
 import { message, Row, Col, Radio, DatePicker } from 'antd'
 // API
 import { Add, Detailed } from '@/api/job'
-import { requestData, Upload } from '@api/common'
+import { requestData } from '@api/common'
 // url
 import requestUrl from '@api/requestUrl'
 // 组件
@@ -15,7 +15,6 @@ import locale from 'antd/es/date-picker/locale/zh_CN'
 import { nation, face, education } from '@/js/data'
 // 检验
 import { validate_phone } from '@/utils/validate'
-import { Editor } from '@tinymce/tinymce-react'
 
 class StaffAdd extends Component {
   constructor(props) {
@@ -77,8 +76,16 @@ class StaffAdd extends Component {
           type: 'Upload',
           label: '头像',
           name: 'b3',
+          request: true,
           required: true,
           message: '请上传头像',
+        },
+        {
+          type: 'Upload',
+          label: '毕业证',
+          name: 'b30',
+          required: true,
+          message: '请上传毕业证',
         },
         {
           type: 'Date',
@@ -113,7 +120,7 @@ class StaffAdd extends Component {
           name: 'a6',
           required: true,
           options: nation,
-          placeholder: '请输入11位数字的手机号',
+          placeholder: '请选择民族',
         },
         {
           type: 'Select',
@@ -121,7 +128,7 @@ class StaffAdd extends Component {
           name: 'a7',
           required: true,
           options: face,
-          placeholder: '请输入11位数字的手机号',
+          placeholder: '请选择政治面貌',
         },
         {
           type: 'Input',
@@ -164,7 +171,7 @@ class StaffAdd extends Component {
           name: 'a13',
           required: true,
           style: { width: '200px' },
-          placeholder: '请选择邮箱',
+          placeholder: '请选择职位',
         },
         {
           type: 'Slot',
@@ -180,7 +187,7 @@ class StaffAdd extends Component {
           placeholder: '请输入邮箱',
         },
         {
-          type: 'Input',
+          type: 'Editor',
           label: '描述',
           name: 'a16',
           required: true,
@@ -268,35 +275,6 @@ class StaffAdd extends Component {
   }
 
   render() {
-    const editorObj = {
-      height: '800px',
-      language: 'zh_CN',
-      plugins: 'table lists link image preview code',
-      toolbar: `formatselect | code | preview | bold italic strikethrough forecolor backcolor | 
-        link image | alignleft aligncenter alignright alignjustify  | 
-        numlist bullist outdent indent`,
-      relative_urls: false,
-      file_picker_types: 'image',
-      images_upload_url: 'http',
-      image_advtab: true,
-      image_uploadtab: true,
-      images_upload_handler: (blobInfo, success, failure) => {
-        var formData
-        var file = blobInfo.blob() //转化为易于理解的file对象
-        formData = new FormData()
-        formData.append('file', file, file.name) //此处与源文档不一样
-        Upload(formData)
-          .then((response) => {
-            const data = response.data.data.url
-            success(data)
-          })
-          .catch((error) => {
-            const data = error.data
-            failure(data.message)
-          })
-      },
-    }
-
     return (
       <Fragment>
         <FormCom
@@ -325,21 +303,6 @@ class StaffAdd extends Component {
             </Row>
           </div>
         </FormCom>
-        <Editor
-          inline={false}
-          selector="editorStateRef" // 选择器
-          apiKey="官网上申请的key值"
-          initialValue={'1111'}
-          init={{ ...editorObj }} // 初始化配置
-          onEditorChange={this.handleEditorChange}
-        />
-        {/**
-         * 1、插槽没有元素的情况，this.props.children 获取的是 undefault。
-         * 2、只有一个元素的情况，就是一个 object 对象。
-         * 3、多个的情况下，就是 Array 数组对象。
-         *
-         * this.props.children 获取所有
-         */}
       </Fragment>
     )
   }

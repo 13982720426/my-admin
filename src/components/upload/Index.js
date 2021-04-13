@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { Upload, message } from 'antd'
 // icon
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+// api
 import { UploadToken } from '@/api/common'
 class UploadComponent extends Component {
   constructor(props) {
@@ -18,7 +19,14 @@ class UploadComponent extends Component {
     }
   }
 
+  /**
+   * 空间：每个人都可以注册空间，但是如何去识别空间是自己的
+   * 密钥：相当于钥匙，通过钥匙以及空间名称去生成token ，token类型暗号之类的东西，也就是一个令牌；
+   * token：校验是否有权限上传文件。
+   */
+
   componentDidMount() {}
+
   /**
    * 在公司时，并不是这样传参数。
    */
@@ -29,6 +37,7 @@ class UploadComponent extends Component {
       buckety: 'bigbigtime',
     }).then((response) => {
       const data = response.data.data
+      localStorage.setItem('uploadTokey', data.token)
       return data.token
     })
   }
@@ -42,7 +51,11 @@ class UploadComponent extends Component {
 
   // 上传之前
   beforeUpload = async (file) => {
-    const token = await this.getUploadToken()
+    // 第一种方式
+    const uploadTokey = localStorage.getItem('uploadTokey')
+    // if(!this.props.request && !uploadTokey) { return false; }
+    // 第二种方式
+    const token = uploadTokey || (await this.getUploadToken()) // 等待某些行为执行完成，表面性的理解
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
     if (!isJpgOrPng) {
       message.error('You can only upload JPG/PNG file!')
@@ -51,11 +64,10 @@ class UploadComponent extends Component {
     if (!isLt2M) {
       message.error('Image must smaller than 2MB!')
     }
-
-    //解析文件
+    // 解析文件
     const name = file.name
     const key = encodeURI(`${name}`)
-    //更新文件的 key
+    // 更新文件的 key
     this.setState({
       uploadKey: {
         token,
@@ -74,28 +86,16 @@ class UploadComponent extends Component {
     if (info.file.status === 'done') {
       const fileInfo = info.file.response
       const imageUrl = `http://qkronr45u.hn-bkt.clouddn.com/${fileInfo.key}`
+
       this.setState(
         {
           imageUrl,
           loading: false,
         },
         () => {
-          this.triggerChange(imageUrl)
+          this.triggerChange(this.state.imageUrl)
         }
       )
-
-      //   // Get this url from response in real world.
-      //   this.getBase64(info.file.originFileObj, (imageUrl) =>
-      //     this.setState(
-      //       {
-      //         imageUrl,
-      //         loading: false,
-      //       },
-      //       () => {
-      //         this.triggerChange(imageUrl)
-      //       }
-      //     )
-      //   )
     }
   }
 
@@ -135,4 +135,12 @@ class UploadComponent extends Component {
     )
   }
 }
+// // 校验数据类型
+// UploadComponent.propTypes = {
+//     request: PropTypes.bool
+// }
+// // 默认
+// UploadComponent.defaultProps = {
+//     request: false
+// }
 export default UploadComponent
