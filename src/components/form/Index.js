@@ -151,7 +151,11 @@ class FormCom extends Component {
         key={item.name}
         rules={[...rules, { validator: this.validatorComponents }]}
       >
-        <UploadComponent name={item.name} request={item.request} />
+        <UploadComponent
+          name={item.name}
+          request={item.request}
+          initValue={this.props.formConfig.setFieldValue}
+        />
       </Form.Item>
     )
   }
@@ -165,7 +169,10 @@ class FormCom extends Component {
         key={item.name}
         rules={[...rules, { validator: this.validatorComponents }]}
       >
-        <EditorComponent name={item.name} />
+        <EditorComponent
+          name={item.name}
+          initValue={this.props.formConfig.setFieldValue}
+        />
       </Form.Item>
     )
   }

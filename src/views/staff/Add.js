@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react'
 // antd
-import { message, Row, Col, Radio, DatePicker } from 'antd'
+import { message } from 'antd'
 // API
-import { Add, Detailed } from '@/api/staff'
+import { Add, Detailed, Edit } from '@/api/staff'
 import { requestData } from '@api/common'
 // url
 import requestUrl from '@api/requestUrl'
@@ -10,11 +10,13 @@ import requestUrl from '@api/requestUrl'
 import FormCom from '@c/form/Index'
 // 配置日期语言
 import 'moment/locale/zh-cn'
-import locale from 'antd/es/date-picker/locale/zh_CN'
 // 默认数据
 import { nation, face, education } from '@/js/data'
 // 检验
 import { validate_phone } from '@/utils/validate'
+
+import moment from 'moment'
+
 class StaffAdd extends Component {
   constructor(props) {
     super(props)
@@ -76,7 +78,6 @@ class StaffAdd extends Component {
         {
           type: 'Upload',
           label: '头像',
-          request: true,
           name: 'face_img',
           message: '请上传头像',
         },
@@ -87,7 +88,6 @@ class StaffAdd extends Component {
           name: 'birthday',
           format: 'YYYY/MM',
           mode: 'month',
-          required: true,
         },
         {
           type: 'Input',
@@ -120,7 +120,6 @@ class StaffAdd extends Component {
           type: 'Select',
           label: '政治面貌',
           name: 'political',
-          required: true,
           options: face,
           placeholder: '请输入11位数字的手机号',
         },
@@ -128,39 +127,33 @@ class StaffAdd extends Component {
           type: 'Input',
           label: '毕业院校',
           name: 'school',
-          required: true,
         },
         {
           type: 'Select',
           label: '学历',
           name: 'education',
-          required: true,
           options: education,
         },
         {
           type: 'Input',
           label: '专业',
           name: 'major',
-          required: true,
         },
         {
           type: 'Upload',
           label: '毕业证',
           name: 'diploma_img',
-          required: true,
           message: '请上传毕业证',
         },
         {
           type: 'Input',
           label: '微信号',
           name: 'wechat',
-          required: true,
         },
         {
           type: 'Input',
           label: '邮箱',
           name: 'email',
-          required: true,
         },
         {
           type: 'Column',
@@ -206,7 +199,6 @@ class StaffAdd extends Component {
               type: 'Date',
               label: '入职时间',
               name: 'job_entry_date',
-              required: true,
               style: { width: '100%' },
               placeholder: '请输入姓名',
               col: 3,
@@ -215,7 +207,6 @@ class StaffAdd extends Component {
               type: 'Date',
               label: '转正时间',
               name: 'job_formal_date',
-              required: true,
               style: { width: '100%' },
               placeholder: '请输入姓名',
               col: 3,
@@ -224,7 +215,6 @@ class StaffAdd extends Component {
               type: 'Date',
               label: '离职时间',
               name: 'job_quit_date',
-              required: true,
               style: { width: '100%' },
               placeholder: '请输入姓名',
               col: 3,
@@ -242,7 +232,6 @@ class StaffAdd extends Component {
           type: 'Editor',
           label: '描述',
           name: 'introduce',
-          required: true,
           placeholder: '请输入描述内容',
         },
         {
@@ -265,13 +254,25 @@ class StaffAdd extends Component {
 
   getDetailed = () => {
     Detailed({ id: this.state.id }).then((response) => {
-      console.log(response.data.data)
+      const data = response.data.data
+      //日期处理
+      const basisDate = {
+        birthday: data.birthday ? moment(data.birthday) : null,
+        job_entry_date: data.job_entry_date
+          ? moment(data.job_entry_date)
+          : null,
+        job_formal_date: data.job_formal_date
+          ? moment(data.job_formal_date)
+          : null,
+        job_quit_date: data.job_quit_date ? moment(data.job_quit_date) : null,
+      }
+
       this.setState({
         formConfig: {
           ...this.state.formConfig,
-          setFieldValue: response.data.data,
-          url: 'jobEdit',
-          editKey: 'jobId',
+          setFieldValue: { ...data, ...basisDate },
+          url: 'staffEdit',
+          editKey: 'staff_Id',
         },
       })
       // this.refs.form.setFieldsValue(response.data.data);
@@ -297,17 +298,25 @@ class StaffAdd extends Component {
   onHandlerEdit = (value) => {
     const requestData = value
     requestData.id = this.state.id
-    // Edit(requestData).then(response => {
-    //     const data = response.data;
-    //     message.info(data.message)
-    //     this.setState({
-    //         loading: false
-    //     })
-    // }).catch(error => {
-    //     this.setState({
-    //         loading: false
-    //     })
-    // })
+
+    requestData.birthday = new Date(requestData.birthday)
+    requestData.job_entry_date = new Date(requestData.job_entry_date)
+    requestData.job_formal_date = new Date(requestData.job_formal_date)
+    requestData.job_quit_date = new Date(requestData.job_quit_date)
+
+    Edit(requestData)
+      .then((response) => {
+        const data = response.data
+        message.info(data.message)
+        this.setState({
+          loading: false,
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        })
+      })
   }
   /** 添加信息 */
   onHandlerAdd = (value) => {
