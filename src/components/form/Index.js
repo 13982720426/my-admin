@@ -43,10 +43,15 @@ class FormCom extends Component {
         Upload: '请上传',
       },
     }
+    this.form = React.createRef()
+  }
+
+  componentDidMount() {
+    this.props.onRef && this.props.onRef(this)
   }
 
   componentWillReceiveProps({ formConfig }) {
-    this.refs.form.setFieldsValue(formConfig.setFieldValue)
+    this.form.current.setFieldsValue(formConfig.setFieldValue)
   }
   // 校验规则
   rules = (item) => {
@@ -232,7 +237,7 @@ class FormCom extends Component {
 
   // 内联的控件
   formItemInlineElem = (item) => {
-    const rules = this.rules(item)
+    // const rules = this.rules(item)
     return (
       <Row>
         <Col
@@ -360,6 +365,8 @@ class FormCom extends Component {
         message.info(responseData.message)
         // 取消按钮加载
         this.setState({ loading: false })
+        //清除表单
+        this.onReset()
       })
       .catch((error) => {
         // 取消按钮加载
@@ -367,20 +374,37 @@ class FormCom extends Component {
       })
   }
 
+  onReset = () => {
+    this.form.current.resetFields()
+  }
+
   render() {
+    const { submitButton, formLayout } = this.props
+
     return (
       <Form
-        ref="form"
+        ref={this.form}
         onFinish={this.onSubmit}
         initialValues={this.props.formConfig.initValue}
         {...this.props.formLayout}
       >
         {this.initFormItem()}
-        <Form.Item>
-          <Button loading={this.state.loading} type="primary" htmlType="submit">
-            确定
-          </Button>
-        </Form.Item>
+        <Row>
+          <Col span={formLayout.labelCol.span}></Col>
+          <Col span={formLayout.wrapperCol.span}>
+            {submitButton ? (
+              <Button
+                loading={this.state.loading}
+                type="primary"
+                htmlType="submit"
+              >
+                确定
+              </Button>
+            ) : (
+              ''
+            )}
+          </Col>
+        </Row>
       </Form>
     )
   }
@@ -388,9 +412,11 @@ class FormCom extends Component {
 // 校验数据类型
 FormCom.propTypes = {
   formConfig: PropTypes.object,
+  submitButton: PropTypes.bool,
 }
 // 默认
 FormCom.defaultProps = {
   formConfig: {},
+  submitButton: true,
 }
 export default FormCom
