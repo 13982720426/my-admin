@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { Modal } from 'antd'
+import { message, Modal } from 'antd'
 
 import FormCom from '@c/form/Index'
-import { validate_phone } from '@/utils/validate'
+import { validate_phone, validate_pass } from '@/utils/validate'
+import { UserAdd } from '@/api/user'
+import CryptoJs from 'crypto-js'
 
 class UserModal extends Component {
   constructor(props) {
@@ -41,6 +43,16 @@ class UserModal extends Component {
           required: true,
           style: { width: '200px' },
           placeholder: '请输入密码',
+          rules: [
+            () => ({
+              validator(rule, value) {
+                if (validate_pass(value)) {
+                  return Promise.resolve()
+                }
+                return Promise.reject('密码不正确格式有误')
+              },
+            }),
+          ],
         },
         {
           type: 'Input',
@@ -49,6 +61,19 @@ class UserModal extends Component {
           required: true,
           style: { width: '200px' },
           placeholder: '请再次输入密码',
+          rules: [
+            ({ getFieldValue }) => ({
+              validator(rule, value) {
+                if (!validate_pass(value)) {
+                  return Promise.reject('密码不正确格式有误')
+                }
+                if (getFieldValue('password') !== value) {
+                  return Promise.reject('两次密码不相同')
+                }
+                return Promise.resolve()
+              },
+            }),
+          ],
         },
         {
           type: 'Input',
@@ -94,16 +119,38 @@ class UserModal extends Component {
   componentDidMount() {
     this.props.onRef(this)
   }
+
+  onFormRef = (ref) => {
+    this.child = ref
+  }
+
   visibleModal = (status) => {
     this.setState({
       isModalVisible: status,
     })
   }
 
-  handleOk = () => {}
+  handleOk = () => {
+    this.child.onSubmit()
+  }
   handleCancel = () => {
+    //清除表单
+    this.child.onReset()
     this.visibleModal(false)
   }
+  submit = (value) => {
+    const requestData = value
+    requestData.password = CryptoJs.MD5(value.password).toString()
+    delete requestData.passwords
+    UserAdd(requestData).then((response) => {
+      const responseData = response.data
+      //提示
+      message.info(responseData.message)
+      //关闭弹窗
+      this.handleCancel(false)
+    })
+  }
+
   render() {
     return (
       <Modal
@@ -111,13 +158,15 @@ class UserModal extends Component {
         visible={this.state.isModalVisible}
         onOk={this.handleOk}
         onCancel={this.handleCancel}
+        footer={null}
       >
         <FormCom
+          onRef={this.onFormRef}
           formItem={this.state.formItem}
           formLayout={this.state.formLayout}
           formConfig={this.state.formConfig}
-          submit={this.onHandlerSubmit}
-          submitButton={false}
+          submit={this.submit}
+          //   submitButton={false}
         ></FormCom>
       </Modal>
     )
