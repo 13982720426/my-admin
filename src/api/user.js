@@ -10,3 +10,13 @@ export function UserAdd(data) {
     data,
   })
 }
+/**
+ * 详情
+ */
+export function UserDetailed(data) {
+  return service.request({
+    url: '/user/detailed/',
+    method: 'post',
+    data,
+  })
+}

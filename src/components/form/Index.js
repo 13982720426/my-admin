@@ -85,8 +85,13 @@ class FormCom extends Component {
         name={item.name}
         key={item.name}
         rules={rules}
+        shouldUpdate={item.upload_field || false}
       >
-        <Input style={item.style} placeholder={item.placeholder} />
+        <Input
+          type={item.value_type || 'text'}
+          style={item.style}
+          placeholder={item.placeholder}
+        />
       </Form.Item>
     )
   }
