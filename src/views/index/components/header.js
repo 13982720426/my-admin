@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 
 // antd icon
-import { MenuFoldOutlined, LoginOutlined } from '@ant-design/icons'
+import { MenuFoldOutlined } from '@ant-design/icons'
 //css
 import './aside.scss'
 
