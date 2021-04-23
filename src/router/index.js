@@ -25,7 +25,6 @@ const router = [
     icon: 'bars',
     key: '/index/department',
     role: ['user'],
-
     child: [
       {
         key: '/index/department/list',
