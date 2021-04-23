@@ -1,9 +1,10 @@
-import { setTokenKey, setUsernameKey, logout } from '../Type'
+import { setTokenKey, setUsernameKey, logout, router } from '../Type'
 import { getToken, getUsername } from '@/utils/cookies'
 // 全局配置
 const app = {
   token: '' || getToken(), // 登录后存储了 token 和 username
   username: '' || getUsername(),
+  routers: [],
 }
 
 // config Reducer
@@ -21,6 +22,13 @@ const configReducer = function (state = app, action) {
       return {
         ...state,
         username: action.value,
+      }
+    }
+    // router
+    case router: {
+      return {
+        ...state,
+        routers: action.value,
       }
     }
     // logout

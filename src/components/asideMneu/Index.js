@@ -22,20 +22,25 @@ class AsideMenu extends Component {
     const role = sessionStorage.getItem('role').split(',')
     //存储路由
     let routerArray = []
-    routerArray = Router.filter((item) => {
-      console.log(this.hasPermission(role, item))
-      if (this.hasPermission(role, item)) {
-        if (item.child && item.child.length > 0) {
-          item.child = item.child.filter((child) => {
-            if (this.hasPermission(role, child)) {
-              return child
-            }
-          })
+    if (role.includes('admin')) {
+      routerArray = Router
+    } else {
+      routerArray = Router.filter((item) => {
+        if (this.hasPermission(role, item)) {
+          if (item.child && item.child.length > 0) {
+            item.child = item.child.filter((child) => {
+              if (this.hasPermission(role, child)) {
+                return child
+              }
+              return false
+            })
+            return item
+          }
           return item
         }
-        return item
-      }
-    })
+        return false
+      })
+    }
     this.setState({
       router: routerArray,
     })
