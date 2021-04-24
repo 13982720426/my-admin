@@ -43,7 +43,10 @@ class LoginForm extends Component {
     this.setState({
       loading: true,
     })
-    this.props.actions.handlerLogin(requestData)
+    this.props.actions.handlerLogin(requestData).then((response) => {
+      // 路由跳转
+      this.props.history.push('/index')
+    })
 
     //     Login(requestData)
     //       .then((response) => {
